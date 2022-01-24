@@ -9,19 +9,36 @@
 		<b-collapse id="nav-collapse" is-nav>
 			<!-- Right aligned nav items -->
 			<b-navbar-nav class="ml-auto">
-				<router-link to="/home" class="nav-link" exact >Home</router-link>
-				<router-link to="/login" class="nav-link" exact>Login</router-link>
-				<router-link to="/cadastro" class="nav-link" exact>Cadastre-se</router-link>
+				<b-nav-item class="nav-link" @click="$bvModal.show('loginModal')">Login</b-nav-item>
+				<b-nav-item class="nav-link" @click="$bvModal.show('cadastroModal')">Cadastre-se</b-nav-item>
 			</b-navbar-nav>
 		</b-collapse>
 	</b-navbar>
 	</div>
+	<login-modal></login-modal>
+	<cadastro-modal></cadastro-modal>
   </div>
 </template>
 
 <script>
+	import LoginModal from '../login/LoginModal.vue'
+	import CadastroModal from '../login/CadastroModal.vue'
+	
 	export default {
+		components: {
+			'login-modal': LoginModal,
+			'cadastro-modal': CadastroModal,
+		},
 
+		data() {
+			return {
+				modalLogin: false
+			}
+		},
+
+		methods: {
+
+		}
 	}
 </script>
 
