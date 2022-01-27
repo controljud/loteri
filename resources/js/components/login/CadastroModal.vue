@@ -69,7 +69,16 @@
                 } else {
                     // TODO - Mensagem de dados incorretos
                 }
+
+                this.apagaDados();
             },
+
+            apagaDados() {
+                this.form.name = '';
+                this.form.email = '';
+                this.form.password = '';
+                this.form.confirm = '';
+            }
         }
     }
 </script>
