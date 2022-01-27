@@ -15,7 +15,7 @@
 		</b-collapse>
 	</b-navbar>
 	</div>
-	<login-modal></login-modal>
+	<login-modal @openCadastro='openCadastro'></login-modal>
 	<cadastro-modal></cadastro-modal>
   </div>
 </template>
@@ -37,7 +37,9 @@
 		},
 
 		methods: {
-
+			openCadastro() {
+				
+			}
 		}
 	}
 </script>

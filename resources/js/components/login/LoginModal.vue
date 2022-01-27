@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-modal id="loginModal" hide-footer>
+        <b-modal id="loginModal" hide-footer hide-header-close>
             <template #modal-title>Login</template>
             <div class="d-block text-left">
                 <b-form>
@@ -28,7 +28,7 @@
                     <i class="fas fa-sign-in-alt"></i> Entrar
                 </b-button>
 
-                <b-button type="button" variant="outline-secondary" @click="register">
+                <b-button type="button" variant="outline-secondary" @click="$bvModal.hide('loginModal');$bvModal.show('cadastroModal')">
                     <i class="fas fa-user-plus"></i> Não tenho conta
                 </b-button>
             </div>
@@ -37,6 +37,8 @@
 </template>
 
 <script>
+    import {api} from './../../config';
+
     export default {
         data() {
             return {
@@ -48,17 +50,11 @@
         },
 
         methods: {
-            login() {},
-        
-            register() {
-                this.$router.push('/cadastro');
-            },
+            login() {
+                axios.post(api.login, this.form).then(response => {
+                    console.log(response);
+                });
+            }
         }
     }
 </script>
-
-<style scoped>
-    .close {
-        display: none !important;
-    }
-</style>

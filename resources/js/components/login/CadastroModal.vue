@@ -1,11 +1,11 @@
 <template>
     <div>
-        <b-modal id="cadastroModal" hide-footer>
+        <b-modal id="cadastroModal" hide-footer hide-header-close>
             <template #modal-title>Cadastro</template>
             <div class="d-block text-left">
                 <b-form>
                     <b-form-group label="Nome" label-for="nome">
-                        <b-form-input id="nome" type="nome" placeholder="Digite seu nome" autocomplete="off" v-model="form.nome"></b-form-input>
+                        <b-form-input id="nome" type="text" placeholder="Digite seu nome" autocomplete="off" v-model="form.name"></b-form-input>
                     </b-form-group>
 
                     <b-form-group label="E-mail" label-for="email">
@@ -40,28 +40,36 @@
 </template>
 
 <script>
+    import {api} from './../../config';
+
     export default {
         data() {
             return {
                 form: {
+                    name: "",
                     email: "",
-                    password: ""
+                    password: "",
+                    confirm: ""
                 }
             }
         },
 
         methods: {
-            login() {},
-        
             register() {
-                this.$router.push('/cadastro');
+                if (this.form.name != '' && this.form.email != '' && this.form.password != '' && this.form.password == this.form.confirm) {
+                    axios.post(api.cadastro, this.form).then(response => {
+                        if (response.data.status == 0) {
+                            // TODO - Mensagem de cadastro realizado com sucesso
+                            // TODO - Login automático - JWT
+                            // TODO - Fechar janela de cadastro
+                        } else {
+                            // TODO - Tratamento de erros
+                        }
+                    });
+                } else {
+                    // TODO - Mensagem de dados incorretos
+                }
             },
         }
     }
 </script>
-
-<style scoped>
-    .close {
-        display: none !important;
-    }
-</style>
