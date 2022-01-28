@@ -59,15 +59,17 @@
                 if (this.form.name != '' && this.form.email != '' && this.form.password != '' && this.form.password == this.form.confirm) {
                     axios.post(api.cadastro, this.form).then(response => {
                         if (response.data.status == 0) {
-                            // TODO - Mensagem de cadastro realizado com sucesso
+                            this.$toast.success("Cadastro efetuado com sucesso");
+                            
                             // TODO - Login automático - JWT
                             // TODO - Fechar janela de cadastro
                         } else {
+                            this.$toast.danger("Falha no cadastro");
                             // TODO - Tratamento de erros
                         }
                     });
                 } else {
-                    // TODO - Mensagem de dados incorretos
+                    this.$toast.warning("Preencha todos os campos");
                 }
 
                 this.apagaDados();

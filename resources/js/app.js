@@ -13,6 +13,11 @@ import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
+import Vue from 'vue';
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -26,6 +31,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 Vue.component('app', require('./components/App.vue').default);
 Vue.use(BootstrapVue);
+Vue.use(Toast);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
