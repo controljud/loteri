@@ -10,16 +10,26 @@ use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
-    public function login()
+    public function login(Request $request)
     {
-        $retorno = [
-            "status" => 0,
-            "mensagem" => "Retorno Login OK",
-            "data" => [
-                
-            ]
-        ];
-        return response()->json($retorno);
+        try {
+            $user = auth('api')->attempt(
+                ['email' => $request->email, 'password' => $request->password]
+            );
+
+            return response()->json([
+                "status" => 0,
+                "mensagem" => "Retorno Login OK",
+                "data" => $user
+            ]);
+        } catch (Exception $ex) {
+            Log::error("Erro no login: " . $ex->getMessage());
+            return response()->json([
+                "status" => 1,
+                "mensagem" => "Erro no retorno do Login",
+                "data" => []
+            ]);
+        }
     }
 
     public function cadastro(Request $request)
