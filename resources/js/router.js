@@ -11,6 +11,14 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+	const publicPages = ['/'];
+	const authRequired = !publicPages.includes(to.path);
+	const loggedIn = localStorage.getItem('user');
+
+	if (authRequired && !loggedIn) {
+		return next('/');
+	}
+
 	next();
 });
 

@@ -60,9 +60,21 @@
                     /*axios.post(api.cadastro, this.form).then(response => {
                         if (response.data.status == 0) {
                             this.$toast.success("Cadastro efetuado com sucesso");
+
+                            axios.post(api.login, this.form).then(response => {
+                                let dados = response.data;
+                                
+                                if (dados.status == 0) {
+                                    localStorage.setItem('user', dados.data.user);
+                                    localStorage.setItem('token', dados.data.token);
+
+                                    // TODO - Encaminhar para o home
+                                    this.$router.push('Home');
+                                }
+                            });
                             
                             // TODO - Login automático - JWT
-                            // TODO - Fechar janela de cadastro
+                            // TODO - Encaminhar para o home
                         } else {
                             this.$toast.danger("Falha no cadastro");
                             // TODO - Tratamento de erros

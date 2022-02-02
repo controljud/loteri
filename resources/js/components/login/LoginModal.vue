@@ -48,13 +48,21 @@
                 }
             }
         },
-
+ 
         methods: {
             login() {
                 axios.post(api.login, this.form).then(response => {
-                    console.log(response);
+                    let dados = response.data;
+                    
+                    if (dados.status == 0) {
+                        localStorage.setItem('user', dados.data.user);
+                        localStorage.setItem('token', dados.data.token);
+
+                        window.location.href = "/home";
+                    } else {
+                        this.$toast.warning("Não foi possível realizar o login");
+                    }
                 });
-                this.$toast.success("I'm a toast!");
             }
         }
     }
