@@ -26,7 +26,6 @@
 <script>
 	import LoginModal from '../login/LoginModal.vue'
 	import CadastroModal from '../login/CadastroModal.vue'
-	import {auth} from '../../auth';
 	
 	export default {
 		components: {
