@@ -25,5 +25,6 @@ Route::post('/cadastro', 'App\Http\Controllers\Api\LoginController@cadastro');
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::group(['prefix' => 'mega'], function() {
         Route::get('/sorteados', 'App\Http\Controllers\Api\MegaSenaController@getDadosSorteados');
+        Route::put('/update', 'App\Http\Controllers\Api\MegaSenaController@putUpdate');
     });
 });
