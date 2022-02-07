@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableMegaSena extends Migration
+class CreateLtSorteios extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,15 @@ class CreateTableMegaSena extends Migration
      */
     public function up()
     {
-        Schema::create('lt_mega_sena', function (Blueprint $table) {
+        Schema::create('lt_sorteios', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_jogo');
             $table->integer('numero');
             $table->string('dezenas');
             $table->date('data');
             $table->timestamps();
+
+            $table->foreign('id_jogo')->references('id')->on('lt_jogos');
         });
     }
 
@@ -29,6 +32,6 @@ class CreateTableMegaSena extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lt_mega_sena');
+        Schema::dropIfExists('lt_sorteios');
     }
 }

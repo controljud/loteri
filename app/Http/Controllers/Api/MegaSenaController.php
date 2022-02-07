@@ -6,13 +6,24 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use App\Models\MegaSenaModel;
+use App\Models\Sorteios;
+use App\Models\Jogos;
 use Carbon\Carbon;
 
 use Exception;
 
 class MegaSenaController extends Controller
 {
+    const JOGO = 'Mega Sena';
+    private $id_jogo;
+
+    public function __construct()
+    {
+        $jogo = Jogos::where('jogo', self::JOGO)->first();
+
+        $this->id_jogo = $jogo->id;
+    }
+
     public function getDadosSorteados()
     {
         return 'ok';
@@ -65,20 +76,20 @@ class MegaSenaController extends Controller
             }
     
             usort($linhas, array($this, "sortArray"));
-            // return response()->json($linhas);
     
             foreach ($linhas as $linha) {
-                $megaSena = new MegaSenaModel;
-                $megaSena->numero = $linha[0];
-                $megaSena->dezenas = $linha[2];
-                $megaSena->data = Carbon::createFromFormat('d/m/Y', $linha[1])->format('Y-m-d');
+                $sorteio = new Sorteios;
+                $sorteio->id_jogo = $this->id_jogo;
+                $sorteio->numero = $linha[0];
+                $sorteio->dezenas = $linha[2];
+                $sorteio->data = Carbon::createFromFormat('d/m/Y', $linha[1])->format('Y-m-d');
                 
-                $megaSena->save();
+                $sorteio->save();
             }
     
             return response()->json([
                 "status" => 0,
-                "message" => "",
+                "message" => "Sorteios criados com sucesso",
                 "data" => null
             ]);
         } catch (Exception $ex) {
@@ -93,7 +104,6 @@ class MegaSenaController extends Controller
 
     public function postSorteio(Request $request)
     {
-        
         $megaSena = new MegaSenaModel;
     }
 

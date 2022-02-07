@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MegaSenaModel extends Model
+class Jogos extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'numero', 'dezenas', 'data'
+        'jogo', 'status'
     ];
-    protected $table = 'lt_mega_sena';
+    protected $table = "lt_jogos";
 }

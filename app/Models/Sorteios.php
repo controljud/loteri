@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TotaisModel extends Model
+class Sorteios extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'mega_sena'
+        'id_jogo', 'numero', 'dezenas', 'data'
     ];
-    protected $table = 'lt_sorteio_totais';
+    protected $table = 'lt_sorteios';
 }
