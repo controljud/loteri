@@ -16,7 +16,7 @@ class CreateLtTotais extends Migration
         Schema::create('lt_totais', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_jogo');
-            $table->string('totais');
+            $table->longText('totais');
             $table->timestamps();
 
             $table->foreign('id_jogo')->references('id')->on('lt_jogos');

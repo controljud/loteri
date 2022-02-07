@@ -24,11 +24,6 @@ class MegaSenaController extends Controller
         $this->id_jogo = $jogo->id;
     }
 
-    public function getDadosSorteados()
-    {
-        return 'ok';
-    }
-
     public function putUpdate()
     {
         set_time_limit(0);
