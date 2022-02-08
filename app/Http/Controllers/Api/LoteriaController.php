@@ -114,7 +114,7 @@ class LoteriaController extends Controller
 
             return response()->json([
                 "status" => 0,
-                "message" => "",
+                "message" => "Totais gerados com sucesso",
                 "data" => $totaisJogo
             ]);
         } catch (Exception $ex) {
