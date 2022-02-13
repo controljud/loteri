@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Models\Sorteios;
 use App\Models\Jogos;
+use App\Models\Totais;
 use Carbon\Carbon;
 
 use Exception;
