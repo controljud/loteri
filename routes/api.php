@@ -31,6 +31,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 
     Route::post('/jogo', 'App\Http\Controllers\Api\LoteriaController@postJogo');
     Route::get('/jogos', 'App\Http\Controllers\Api\LoteriaController@getJogos');
+    Route::get('/ultimo/jogo/{id_jogo}', 'App\Http\Controllers\Api\LoteriaController@getUltimoJogo');
     Route::put('/totais', 'App\Http\Controllers\Api\LoteriaController@putTotais');
     Route::get('/totais/{id_jogo}', 'App\Http\Controllers\Api\LoteriaController@getTotais');
 });

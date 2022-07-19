@@ -73,19 +73,25 @@ class MegaSenaController extends Controller
     
             usort($linhas, array($this, "sortArray"));
     
+            $numeros = Sorteios::where('id_jogo', $this->id_jogo)->pluck('numero')->toArray();
+            $adicionados = 0;
             foreach ($linhas as $linha) {
-                $sorteio = new Sorteios;
-                $sorteio->id_jogo = $this->id_jogo;
-                $sorteio->numero = $linha[0];
-                $sorteio->dezenas = $linha[2];
-                $sorteio->data = Carbon::createFromFormat('d/m/Y', $linha[1])->format('Y-m-d');
-                
-                $sorteio->save();
+                if (!in_array($linha[0], $numeros)) {
+                    $sorteio = new Sorteios;
+                    $sorteio->id_jogo = $this->id_jogo;
+                    $sorteio->numero = $linha[0];
+                    $sorteio->dezenas = $linha[2];
+                    $sorteio->data = Carbon::createFromFormat('d/m/Y', $linha[1])->format('Y-m-d');
+                    
+                    $sorteio->save();
+
+                    $adicionados++;
+                }
             }
     
             return response()->json([
                 "status" => 0,
-                "message" => "Sorteios criados com sucesso",
+                "message" => $adicionados . " sorteios criados com sucesso",
                 "data" => null
             ]);
         } catch (Exception $ex) {

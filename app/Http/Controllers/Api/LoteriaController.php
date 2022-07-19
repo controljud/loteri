@@ -61,6 +61,22 @@ class LoteriaController extends Controller
         }
     }
 
+    public function getUltimoJogo(Request $request, $id_jogo)
+    {
+        try {
+            // $ultimo = Sorteios::where('id_jogo', $id_jogo)->last();
+            $ultimo = Sorteios::where('id_jogo', $id_jogo)->orderBy('numero', 'desc')->first();
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Último sorteio Mega Sena",
+                "data" => $ultimo
+            ]);
+        } catch (Exception $ex) {
+
+        }
+    }
+
     public function getTotais(Request $request, $id_jogo)
     {
         try {
@@ -97,10 +113,11 @@ class LoteriaController extends Controller
                     $dezenas = json_decode($sorteio->dezenas);
                     
                     foreach ($dezenas as $dezena) {
-                        if (isset($totaisJogo[$dezena])) {
-                            $totaisJogo[$dezena] = $totaisJogo[$dezena] + 1;
+                        $indice = intval($dezena);
+                        if (isset($totaisJogo[$indice])) {
+                            $totaisJogo[$indice] = $totaisJogo[$indice] + 1;
                         } else {
-                            $totaisJogo[$dezena] = 1;
+                            $totaisJogo[$indice] = 1;
                         }
                     }
                 }

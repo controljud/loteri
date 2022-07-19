@@ -4,5 +4,6 @@ export const api = {
     cadastro: '/api/cadastro',
 
     mega_sorteados: '/api/mega/sorteados',
+    ultimo_jogo: '/api/ultimo/jogo',
     totais: '/api/totais'
 }
