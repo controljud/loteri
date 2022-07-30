@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Sorteios;
 use App\Models\Jogos;
 use App\Models\Totais;
+use App\Models\Aposta;
 use Carbon\Carbon;
+use DB;
 
 use Exception;
 
@@ -140,6 +142,92 @@ class LoteriaController extends Controller
             return response()->json([
                 "status" => 1,
                 "message" => "Erro no retorno dos dados",
+                "data" => null
+            ]);
+        }
+    }
+
+    public function postAposta(Request $request)
+    {
+        try {
+            $aposta = new Aposta;
+            $aposta->id_user = $request->id_user;
+            $aposta->numero = $request->numero;
+            $aposta->data = $request->data;
+            $aposta->dezenas = $request->dezenas;
+
+            $aposta->save();
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Aposta incluída com sucesso",
+                "data" => null
+            ]);
+        } catch (Exception $ex) {
+            Log::error("Erro na gravação da aposta: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro na gravação da aposta",
+                "data" => null
+            ]);
+        }
+    }
+
+    public function getApostas(Request $request, $id_user)
+    {
+        try {
+            $apostas = Aposta::select('numero', DB::raw("date_format(data, '%d/%m/%Y') AS data"), 'dezenas')
+                ->where('id_user', $id_user)->get();
+
+            if ($apostas) {
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Apostas recuperadas com sucesso",
+                    "data" => $apostas
+                ]);
+            }
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Não há apostas cadastradas",
+                "data" => null
+            ]);
+        } catch (Exception $ex) {
+            Log::error("Erro no retorno das apostas: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro no retorno das apostas",
+                "data" => null
+            ]);
+        }
+    }
+
+    public function getSorteioAtual()
+    {
+        try {
+            $sorteio = Sorteios::orderBy('data', 'desc')->first();
+
+            if ($sorteio) {
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Sorteio recuperado com sucesso",
+                    "data" => $sorteio
+                ]);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Não há sorteios futuros",
+                "data" => null
+            ]);
+        } catch (Exception $ex) {
+            Log::error("Erro na recuperação do sorteio: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro na recuperação do sorteio",
                 "data" => null
             ]);
         }

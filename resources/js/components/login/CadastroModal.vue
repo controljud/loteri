@@ -57,7 +57,7 @@
         methods: {
             register() {
                 if (this.form.name != '' && this.form.email != '' && this.form.password != '' && this.form.password == this.form.confirm) {
-                    /*axios.post(api.cadastro, this.form).then(response => {
+                    axios.post(api.cadastro, this.form).then(response => {
                         if (response.data.status == 0) {
                             this.$toast.success("Cadastro efetuado com sucesso");
 
@@ -79,8 +79,7 @@
                             this.$toast.danger("Falha no cadastro");
                             // TODO - Tratamento de erros
                         }
-                    });*/
-                    
+                    });
                 } else {
                     this.$toast.warning("Preencha todos os campos");
                 }

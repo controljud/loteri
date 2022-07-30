@@ -55,7 +55,7 @@
                     let dados = response.data;
                     
                     if (dados.status == 0) {
-                        localStorage.setItem('user', dados.data.user);
+                        localStorage.setItem('user', JSON.stringify(dados.data.user));
                         localStorage.setItem('token', dados.data.token);
 
                         window.location.href = "/home";

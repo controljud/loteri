@@ -18,6 +18,26 @@ import "vue-toastification/dist/index.css";
 
 import Vue from 'vue';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { faSave } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faPlus);
+library.add(faTrash);
+library.add(faHome);
+library.add(faStar);
+library.add(faClose);
+library.add(faSave);
+
+Vue.component('font-awesome-icon', FontAwesomeIcon);
+Vue.config.productionTip = false;
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
