@@ -65,6 +65,8 @@
 					if (retorno.status == 0) {
 						let totais = retorno.data[0].totais;
 						this.totais = JSON.parse(totais);
+						
+						this.getMinTotal();
 					}
 				}).catch(error => {
 					if (error.response.status == 401) {
@@ -88,6 +90,19 @@
 						window.location.href = "/";
 					}
 				});
+			},
+
+			getMinTotal() {
+				let min = 1000;
+				for (let i = 0; i < this.totais.length; i++) {
+					// if (total < min) {
+					// 	min = total;
+					// }
+					console.log(this.totais[i]);
+				};
+
+				// console.log(min);
+				// console.log(this.totais);
 			}
 		}
 	}
