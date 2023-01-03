@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -10,25 +11,40 @@ use App\Models\Sorteios;
 use App\Models\Jogos;
 use App\Models\Totais;
 use App\Models\Aposta;
+use App\Models\User;
 use Carbon\Carbon;
-use DB;
 
 use Exception;
 
 class LoteriaController extends Controller
 {
+    private $aposta;
+
+    public function __construct()
+    {
+        $this->aposta = new Aposta;
+    }
+
     public function postJogo(Request $request)
     {
         try {
-            $jogo = new Jogos;
-            $jogo->jogo = $request->jogo;
-            $jogo->status = $request->status;
+            if ($this->isAdminUser()) {
+                $jogo = new Jogos;
+                $jogo->jogo = $request->jogo;
+                $jogo->status = $request->status;
 
-            $jogo->save();
+                $jogo->save();
+
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Jogo criado com sucesso",
+                    "data" => null
+                ]);
+            }
 
             return response()->json([
-                "status" => 0,
-                "message" => "Jogo criado com sucesso",
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
                 "data" => null
             ]);
         } catch (Exception $ex) {
@@ -45,12 +61,20 @@ class LoteriaController extends Controller
     public function getJogos()
     {
         try {
-            $jogos = Jogos::all();
+            if ($this->isAdminUser()) {
+                $jogos = Jogos::all();
+
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Jogo criado com sucesso",
+                    "data" => $jogos
+                ]);
+            }
 
             return response()->json([
-                "status" => 0,
-                "message" => "Jogo criado com sucesso",
-                "data" => $jogos
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
             ]);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
@@ -66,7 +90,6 @@ class LoteriaController extends Controller
     public function getUltimoJogo(Request $request, $id_jogo)
     {
         try {
-            // $ultimo = Sorteios::where('id_jogo', $id_jogo)->last();
             $ultimo = Sorteios::where('id_jogo', $id_jogo)->orderBy('numero', 'desc')->first();
 
             return response()->json([
@@ -82,12 +105,20 @@ class LoteriaController extends Controller
     public function getTotais(Request $request, $id_jogo)
     {
         try {
-            $totais = Totais::where('id_jogo', $id_jogo)->get();
+            if ($this->isAdminUser()) {
+                $totais = Totais::where('id_jogo', $id_jogo)->get();
+
+                return response()->json([
+                    "status" => 0,
+                    "message" => "",
+                    "data" => $totais
+                ]);
+            }
 
             return response()->json([
-                "status" => 0,
-                "message" => "",
-                "data" => $totais
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
             ]);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
@@ -103,38 +134,46 @@ class LoteriaController extends Controller
     public function putTotais(Request $request)
     {
         try {
-            Totais::where('id', '<>', null)->delete();
+            if ($this->isAdminUser()) {
+                Totais::where('id', '<>', null)->delete();
 
-            $jogos = Jogos::all();
+                $jogos = Jogos::all();
 
-            foreach ($jogos as $jogo) {
-                $sorteios = Sorteios::where('id_jogo', $jogo->id)->get();
+                foreach ($jogos as $jogo) {
+                    $sorteios = Sorteios::where('id_jogo', $jogo->id)->get();
 
-                $totaisJogo = [];
-                foreach ($sorteios as $sorteio) {
-                    $dezenas = json_decode($sorteio->dezenas);
-                    
-                    foreach ($dezenas as $dezena) {
-                        $indice = intval($dezena);
-                        if (isset($totaisJogo[$indice])) {
-                            $totaisJogo[$indice] = $totaisJogo[$indice] + 1;
-                        } else {
-                            $totaisJogo[$indice] = 1;
+                    $totaisJogo = [];
+                    foreach ($sorteios as $sorteio) {
+                        $dezenas = json_decode($sorteio->dezenas);
+                        
+                        foreach ($dezenas as $dezena) {
+                            $indice = intval($dezena);
+                            if (isset($totaisJogo[$indice])) {
+                                $totaisJogo[$indice] = $totaisJogo[$indice] + 1;
+                            } else {
+                                $totaisJogo[$indice] = 1;
+                            }
                         }
                     }
+
+                    $totais = new Totais;
+                    $totais->id_jogo = $jogo->id;
+                    $totais->totais = json_encode($totaisJogo);
+
+                    $totais->save();
                 }
 
-                $totais = new Totais;
-                $totais->id_jogo = $jogo->id;
-                $totais->totais = json_encode($totaisJogo);
-
-                $totais->save();
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Totais gerados com sucesso",
+                    "data" => $totaisJogo
+                ]);
             }
 
             return response()->json([
-                "status" => 0,
-                "message" => "Totais gerados com sucesso",
-                "data" => $totaisJogo
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
             ]);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
@@ -150,13 +189,24 @@ class LoteriaController extends Controller
     public function postAposta(Request $request)
     {
         try {
-            $aposta = new Aposta;
-            $aposta->id_user = $request->id_user;
-            $aposta->numero = $request->numero;
-            $aposta->data = $request->data;
-            $aposta->dezenas = $request->dezenas;
+            $dezenas = $this->mountAposta($request->dezenas);
 
-            $aposta->save();
+            $arraySend = [
+                'id_user' => Auth::id(),
+                'numero' => $request->numero,
+                'data' => $request->data,
+                'dezenas' => $dezenas
+            ];
+
+            return response()->json($arraySend);
+
+            $aposta = $this->aposta->setAposta($arraySend);
+            // $aposta->id_user = $request->id_user;
+            // $aposta->numero = $request->numero;
+            // $aposta->data = $request->data;
+            // $aposta->dezenas = $dezenas;
+
+            // $aposta->save();
 
             return response()->json([
                 "status" => 0,
@@ -177,10 +227,9 @@ class LoteriaController extends Controller
     public function getApostas(Request $request, $id_user)
     {
         try {
-            $apostas = Aposta::select('numero', DB::raw("date_format(data, '%d/%m/%Y') AS data"), 'dezenas')
-                ->where('id_user', $id_user)->get();
+            $apostas = $this->aposta->getApostas($id_user);
 
-            if ($apostas) {
+            if (count($apostas) > 0) {
                 return response()->json([
                     "status" => 0,
                     "message" => "Apostas recuperadas com sucesso",
@@ -190,7 +239,7 @@ class LoteriaController extends Controller
 
             return response()->json([
                 "status" => 0,
-                "message" => "Não há apostas cadastradas",
+                "message" => "Não há apostas cadastradas para o usuário informado",
                 "data" => null
             ]);
         } catch (Exception $ex) {
@@ -199,6 +248,33 @@ class LoteriaController extends Controller
             return response()->json([
                 "status" => 1,
                 "message" => "Erro no retorno das apostas",
+                "data" => null
+            ]);
+        }
+    }
+
+    public function postSorteio(Request $request)
+    {
+        try {
+            $sorteio = new Sorteios;
+            $sorteio->id_jogo = $request->id_jogo;
+            $sorteio->numero = $request->numero;
+            $sorteio->dezenas = $request->dezenas;
+            $sorteio->data = $request->data;
+
+            $sorteio->save();
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Sorteio salvo com sucesso",
+                "data" => null
+            ]);
+        } catch (Exception $ex) {
+            Log::error("Erro na inclusão do sorteio: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro na inclusão do sorteio",
                 "data" => null
             ]);
         }
@@ -233,6 +309,17 @@ class LoteriaController extends Controller
         }
     }
 
+    private function mountAposta($dezenas)
+    {
+        $dezenas = str_replace('.', '-', str_replace(',', '-', str_replace(' ', '-', $dezenas)));
+
+        $arrayNumero = explode('-', $dezenas);
+
+        usort($arrayNumero, array($this, "sortArray"));
+
+        return json_encode($arrayNumero);
+    }
+
     private function sortArray($a, $b)
     {   
         if ($a[0] == $b[0]) {
@@ -240,5 +327,10 @@ class LoteriaController extends Controller
         }
         
         return ($a[0] < $b[0]) ? -1 : 1;
+    }
+
+    private function isAdminUser()
+    {
+        return User::where('users.id', Auth::id())->join('lt_admin_users', 'users.id', 'lt_admin_users.id_user')->exists();
     }
 }

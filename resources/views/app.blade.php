@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="author" content="Unimed-Rio">
-        <meta name="description" content="Portal de Serviços de TI">
+        <meta name="author" content="Isaias Santos">
+        <meta name="description" content="Central de apostas">
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
         <title>{{ config('app.name') }}</title>

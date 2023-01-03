@@ -52,4 +52,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function checkAdminUser()
+    {
+        return $this->join('lt_admin_users', 'users.id', 'lt_admin_users.id_user')->first();
+    }
 }

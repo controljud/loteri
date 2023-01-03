@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Sorteios;
 use App\Models\Jogos;
 use App\Models\Totais;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 use Exception;
 
@@ -27,86 +29,94 @@ class MegaSenaController extends Controller
 
     public function putUpdate()
     {
-        set_time_limit(0);
-        try {
-            $url = file_get_contents('https://asloterias.com.br/lista-de-resultados-da-mega-sena');
+        if ($this->isAdminUser()) {
+            set_time_limit(0);
+            try {
+                $url = file_get_contents('https://asloterias.com.br/lista-de-resultados-da-mega-sena');
 
-            $regexp = "/A lista abaixo mostra, o concurso, a data do sorteio e os números sorteados!(.+)Se você quiser fazer o download todos resultados para seu computador, clique no link abaixo/";
-    
-            preg_match_all($regexp, $url, $conteudo);
-            $result = $conteudo[0][0];
-            $res = substr($result, 77, strlen($result)-(95+77));
-    
-            // $res = str_replace("<div class=\"espacamento_altura\"></div>", "", $res);
-    
-            $sorteios = explode('<div class="limpar_flutuacao"></div>', $res);
-            $sorteados = [];
-            $numUltimo = '';
-            $dtUltimo = '';
-            $ultimoSorteio = '';
-    
-            $linhas = [];
-            foreach($sorteios as $sorteio){
-                $sort = str_replace('<div class="espacamento_altura"></div>', '', $sorteio);
-                $dados = explode(" - ", $sort);
-    
-                $retorno = [];
-                $x = 0;
-                foreach($dados as $dado) {
-                    $dado = trim(str_replace("</strong>", "", str_replace("<strong>", "", $dado)));
-    
-                    if ($x == 2) {
-                        $dado = explode(" ", $dado);
-                        // $dado = $dado;
-                        $dado = json_encode($dado);
+                $regexp = "/A lista abaixo mostra, o concurso, a data do sorteio e os números sorteados!(.+)Se você quiser fazer o download todos resultados para seu computador, clique no link abaixo/";
+        
+                preg_match_all($regexp, $url, $conteudo);
+                $result = $conteudo[0][0];
+                $res = substr($result, 77, strlen($result)-(95+77));
+        
+                // $res = str_replace("<div class=\"espacamento_altura\"></div>", "", $res);
+        
+                $sorteios = explode('<div class="limpar_flutuacao"></div>', $res);
+                $sorteados = [];
+                $numUltimo = '';
+                $dtUltimo = '';
+                $ultimoSorteio = '';
+        
+                $linhas = [];
+                foreach($sorteios as $sorteio){
+                    $sort = str_replace('<div class="espacamento_altura"></div>', '', $sorteio);
+                    $dados = explode(" - ", $sort);
+        
+                    $retorno = [];
+                    $x = 0;
+                    foreach($dados as $dado) {
+                        $dado = trim(str_replace("</strong>", "", str_replace("<strong>", "", $dado)));
+        
+                        if ($x == 2) {
+                            $dado = explode(" ", $dado);
+                            // $dado = $dado;
+                            $dado = json_encode($dado);
+                        }
+        
+                        $retorno[] = $dado;
+        
+                        $x++;
                     }
-    
-                    $retorno[] = $dado;
-    
-                    $x++;
+        
+                    if (count($retorno) > 1) {
+                        $linhas[] = $retorno;
+                    }
                 }
-    
-                if (count($retorno) > 1) {
-                    $linhas[] = $retorno;
-                }
-            }
-    
-            usort($linhas, array($this, "sortArray"));
-    
-            $numeros = Sorteios::where('id_jogo', $this->id_jogo)->pluck('numero')->toArray();
-            $adicionados = 0;
-            foreach ($linhas as $linha) {
-                if (!in_array($linha[0], $numeros)) {
-                    $sorteio = new Sorteios;
-                    $sorteio->id_jogo = $this->id_jogo;
-                    $sorteio->numero = $linha[0];
-                    $sorteio->dezenas = $linha[2];
-                    $sorteio->data = Carbon::createFromFormat('d/m/Y', $linha[1])->format('Y-m-d');
-                    
-                    $sorteio->save();
+        
+                usort($linhas, array($this, "sortArray"));
+        
+                $numeros = Sorteios::where('id_jogo', $this->id_jogo)->pluck('numero')->toArray();
+                $adicionados = 0;
+                foreach ($linhas as $linha) {
+                    if (!in_array($linha[0], $numeros)) {
+                        $sorteio = new Sorteios;
+                        $sorteio->id_jogo = $this->id_jogo;
+                        $sorteio->numero = $linha[0];
+                        $sorteio->dezenas = $linha[2];
+                        $sorteio->data = Carbon::createFromFormat('d/m/Y', $linha[1])->format('Y-m-d');
+                        
+                        $sorteio->save();
 
-                    $adicionados++;
+                        $adicionados++;
+                    }
                 }
+        
+                return response()->json([
+                    "status" => 0,
+                    "message" => $adicionados . " sorteios criados com sucesso",
+                    "data" => null
+                ]);
+            } catch (Exception $ex) {
+                Log::error("Erro na execução do serviço: " . $ex->getMessage());
+                return response()->json([
+                    "status" => 1,
+                    "message" => "Erro na execução do serviço",
+                    "data" => null
+                ]);
             }
-    
-            return response()->json([
-                "status" => 0,
-                "message" => $adicionados . " sorteios criados com sucesso",
-                "data" => null
-            ]);
-        } catch (Exception $ex) {
-            Log::error("Erro na execução do serviço: " . $ex->getMessage());
-            return response()->json([
-                "status" => 1,
-                "message" => "Erro na execução do serviço",
-                "data" => null
-            ]);
         }
+        
+        return response()->json([
+            "status" => 1,
+            "message" => "Usuário sem acesso a essa funcionalidade",
+            "data" => null
+        ]);
     }
 
     public function postSorteio(Request $request)
     {
-        $megaSena = new MegaSenaModel;
+        // $megaSena = new MegaSenaModel;
     }
 
     private function sortArray($a, $b)
@@ -116,5 +126,10 @@ class MegaSenaController extends Controller
         }
         
         return ($a[0] < $b[0]) ? -1 : 1;
+    }
+
+    private function isAdminUser()
+    {
+        return User::where('users.id', Auth::id())->join('lt_admin_users', 'users.id', 'lt_admin_users.id_user')->exists();
     }
 }

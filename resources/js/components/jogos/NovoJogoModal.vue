@@ -73,7 +73,8 @@
                     this.form.numero = this.ultimoSorteio.numero;
                     this.form.data = this.ultimoSorteio.data;
                 } else {
-                    this.form.numero = (this.ultimoSorteio.numero + 1);
+                    this.form.numero = (this.ultimoSorteio.numero);
+                    this.form.data = this.ultimoSorteio.data;
                 }
             }).catch(error => {
                 console.log(error);
@@ -85,9 +86,8 @@
                 if (
                     this.form.numero != null
                     && this.form.data != null
-                    && (this.form.dezenas != null && this.validaDezenas(this.form.dezenas))
+                    // && (this.form.dezenas != null && this.validaDezenas(this.form.dezenas))
                 ) {
-                    this.form.dezenas = (this.form.dezenas.split(',')).join('-');
                     let user = JSON.parse(localStorage.getItem('user'));
                     this.form.id_user = user.id;
                     
