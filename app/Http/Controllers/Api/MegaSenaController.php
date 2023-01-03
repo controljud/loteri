@@ -116,7 +116,29 @@ class MegaSenaController extends Controller
 
     public function postSorteio(Request $request)
     {
-        // $megaSena = new MegaSenaModel;
+        try {
+            $sorteio = new Sorteios;
+            $sorteio->id_jogo = $request->id_jogo;
+            $sorteio->numero = $request->numero;
+            $sorteio->dezenas = $request->dezenas;
+            $sorteio->data = $request->data;
+
+            $sorteio->save();
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Sorteio salvo com sucesso",
+                "data" => null
+            ]);
+        } catch (Exception $ex) {
+            Log::error("Erro na inclusão do sorteio: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro na inclusão do sorteio",
+                "data" => null
+            ]);
+        }
     }
 
     private function sortArray($a, $b)

@@ -9,9 +9,9 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="dv_sorteados">
-					<div v-for="(total, index) in totais" :key="index" class="pointSorteio">
+					<div v-for="(total, index) in totais" :key="index" class="pointSorteio" v-bind:style="{background: total[1]}">
 						<span class="dezena"><span v-if="index < 10">0</span>{{index}}</span><br />
-						<span class="total">{{total}}</span>
+						<span class="total" style="font-weight: bold;">{{total[0]}}</span>
 					</div>
 				</div>
 			</div>
@@ -65,6 +65,8 @@
 					if (retorno.status == 0) {
 						let totais = retorno.data[0].totais;
 						this.totais = JSON.parse(totais);
+
+						console.log(this.totais);
 						
 						this.getMinTotal();
 					}

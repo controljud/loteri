@@ -90,7 +90,7 @@ class LoteriaController extends Controller
     public function getUltimoJogo(Request $request, $id_jogo)
     {
         try {
-            $ultimo = Sorteios::where('id_jogo', $id_jogo)->orderBy('numero', 'desc')->first();
+            $ultimo = Sorteios::where('id_jogo', $id_jogo)->whereNotNull('dezenas')->orderBy('numero', 'desc')->first();
 
             return response()->json([
                 "status" => 0,
@@ -146,14 +146,57 @@ class LoteriaController extends Controller
                     foreach ($sorteios as $sorteio) {
                         $dezenas = json_decode($sorteio->dezenas);
                         
-                        foreach ($dezenas as $dezena) {
-                            $indice = intval($dezena);
-                            if (isset($totaisJogo[$indice])) {
-                                $totaisJogo[$indice] = $totaisJogo[$indice] + 1;
-                            } else {
-                                $totaisJogo[$indice] = 1;
+                        if ($dezenas) {
+                            foreach ($dezenas as $dezena) {
+                                $indice = intval($dezena);
+                                if (isset($totaisJogo[$indice])) {
+                                    $totaisJogo[$indice] = $totaisJogo[$indice] + 1;
+                                } else {
+                                    $totaisJogo[$indice] = 1;
+                                }
                             }
                         }
+                    }
+
+                    $arraySort = [];
+                    foreach ($totaisJogo as $key => $total) {
+                        if (!in_array($total, $arraySort)) {
+                            $arraySort[] = $total;
+                        }
+                    }
+
+                    usort($arraySort, array($this, "sortArraySimple"));
+
+                    $x1 = 240; //RED and BLUE - subtrair
+                    $x2 = 20;
+                    $y1 = 250; //GREEN - somar
+                    $y2 = 140;
+                    $totalArray = count($arraySort);
+
+                    $stepX = ($x1 - $x2) / $totalArray;
+                    $stepY = ($y1 - $y2) / $totalArray;
+
+                    $arrayColor = [];
+                    $xStep = $x1;
+                    $yStep = $y1;
+                    foreach ($arraySort as $valor) {
+                        $xStep -= $stepX;
+                        $yStep -= $stepY;
+                        $arrayColor[$valor] = 'rgb(' . round($xStep) . ', ' . round($yStep) . ', ' . round($xStep) . ')';
+                    }
+
+                    foreach ($totaisJogo as $keyx => $total) {
+                        $cor = '';
+                        foreach ($arrayColor as $keyy => $color) {
+                            if ($total == $keyy) {
+                                $cor = $color;
+                            }
+                        }
+
+                        $totaisJogo[$keyx] = [
+                            $total,
+                            $cor
+                        ];
                     }
 
                     $totais = new Totais;
@@ -253,33 +296,6 @@ class LoteriaController extends Controller
         }
     }
 
-    public function postSorteio(Request $request)
-    {
-        try {
-            $sorteio = new Sorteios;
-            $sorteio->id_jogo = $request->id_jogo;
-            $sorteio->numero = $request->numero;
-            $sorteio->dezenas = $request->dezenas;
-            $sorteio->data = $request->data;
-
-            $sorteio->save();
-
-            return response()->json([
-                "status" => 0,
-                "message" => "Sorteio salvo com sucesso",
-                "data" => null
-            ]);
-        } catch (Exception $ex) {
-            Log::error("Erro na inclusão do sorteio: " . $ex->getMessage());
-
-            return response()->json([
-                "status" => 1,
-                "message" => "Erro na inclusão do sorteio",
-                "data" => null
-            ]);
-        }
-    }
-
     public function getSorteioAtual()
     {
         try {
@@ -321,12 +337,21 @@ class LoteriaController extends Controller
     }
 
     private function sortArray($a, $b)
-    {   
+    {
         if ($a[0] == $b[0]) {
             return 0;
         }
         
         return ($a[0] < $b[0]) ? -1 : 1;
+    }
+
+    private function sortArraySimple($a, $b)
+    {
+        if ($a == $b) {
+            return 0;
+        }
+        
+        return ($a < $b) ? -1 : 1;
     }
 
     private function isAdminUser()
