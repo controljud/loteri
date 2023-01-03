@@ -133,10 +133,6 @@
 	height: 14px;
 }
 
-.total {
-	
-}
-
 .dv_sorteados {
 	margin: 0 auto;
 	max-width: 620px;
