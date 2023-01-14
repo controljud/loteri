@@ -16,6 +16,14 @@
                             </b-form-group>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <b-form-group label="Descrição" label-for="descricao">
+                                <b-form-input type="text" autocomplete="off" placeholder="Que tipo de aposta é? Pessoal, Bolão..." v-model="form.descricao"></b-form-input>
+                            </b-form-group>
+                        </div>
+                    </div>
                     
                     <div class="row">
                         <div class="col-md-12">
@@ -29,10 +37,13 @@
                 <hr />
 
                 <div class="row">
-                    <div class="col-md-12 right">
+                    <div class="col-md-10 right">
                         <b-button type="button" variant="success" block @click="salvarSorteio">
                             <font-awesome-icon icon="fa-solid fa-save" />
                         </b-button>
+                    </div>
+                    <div class="col-md-2 right">
+                        
                     </div>
                 </div>
             </div>
@@ -56,6 +67,7 @@
                     id: null,
                     numero: null,
                     data: null,
+                    descricao: null,
                     dezenas: null
                 },
 

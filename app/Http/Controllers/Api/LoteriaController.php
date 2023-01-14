@@ -241,15 +241,14 @@ class LoteriaController extends Controller
                 'dezenas' => $dezenas
             ];
 
-            return response()->json($arraySend);
+            // $aposta = $this->aposta->setAposta($arraySend);
+            $aposta = new Aposta;
+            $aposta->id_user = $request->id_user;
+            $aposta->numero = $request->numero;
+            $aposta->data = $request->data;
+            $aposta->dezenas = $dezenas;
 
-            $aposta = $this->aposta->setAposta($arraySend);
-            // $aposta->id_user = $request->id_user;
-            // $aposta->numero = $request->numero;
-            // $aposta->data = $request->data;
-            // $aposta->dezenas = $dezenas;
-
-            // $aposta->save();
+            $aposta->save();
 
             return response()->json([
                 "status" => 0,
@@ -267,10 +266,12 @@ class LoteriaController extends Controller
         }
     }
 
-    public function getApostas(Request $request, $id_user)
+    public function getApostas(Request $request, $filter)
     {
         try {
-            $apostas = $this->aposta->getApostas($id_user);
+            $id_user = Auth::id();
+
+            $apostas = $this->aposta->getApostas($id_user, $filter);
 
             if (count($apostas) > 0) {
                 return response()->json([

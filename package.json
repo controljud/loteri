@@ -32,6 +32,7 @@
         "bootstrap-vue": "^2.21.2",
         "vue-axios": "^3.4.0",
         "vue-router": "^3.5.3",
-        "vue-toastification": "^1.7.14"
+        "vue-toastification": "^1.7.14",
+        "vuetable-2": "^2.0.0-beta.4"
     }
 }
