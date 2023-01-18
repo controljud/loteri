@@ -6,19 +6,18 @@
 				<p>Aqui estão seus jogos feitos. Tenha vários dados sobre seus jogos</p>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-12 right">
-				<b-button size="sm" class="btn-success" @click="$bvModal.show('novoJogoModal')">
-					<font-awesome-icon icon="fa-solid fa-plus" />
-				</b-button>
-			</div>
-		</div>
 
 		<div class="row">
 			<div class="col-md-3">
 				<b-form-group >
 					<b-form-input type="text" autocomplete="off" placeholder="Busque seus jogos" v-model="filter" v-on:keyup="filtrar"></b-form-input>
 				</b-form-group>
+			</div>
+			<div class="col-md-4"></div>
+			<div class="col-md-5 right">
+				<b-button size="sm" class="btn-success" @click="$bvModal.show('novoJogoModal')">
+					<font-awesome-icon icon="fa-solid fa-plus" />
+				</b-button>
 			</div>
 		</div>
 
@@ -54,11 +53,13 @@
 
 		<div class="row">
 			<div class="col-md-12">
-				<b-pagination-nav
-					v-model="currentPage"
-					:number-of-pages="last_page"
-					@page-click="linkGen"
-				></b-pagination-nav>
+				<paginate
+					:page-count="last_page"
+					:click-handler="linkGen"
+					:prev-text="'<<'"
+					:next-text="'>>'"
+					:container-class="'pagination'"
+				></paginate>
 			</div>
 		</div>
 
@@ -69,10 +70,12 @@
 <script>
 	import {api} from '../../config';
 	import NovoJogoModal from '../jogos/NovoJogoModal.vue';
+	import Paginate from 'vuejs-paginate';
 
 	export default {
 		components: {
-			'novo-jogo-modal': NovoJogoModal
+			'novo-jogo-modal': NovoJogoModal,
+			'paginate': Paginate
 		},
 
 		data() {
@@ -177,16 +180,52 @@
 				// }
 			},
 
-			linkGen(bvEvent, page) {
-				console.log(bvEvent, page);
-				bvEvent.preventDefault(false);
+			linkGen(page) {
+				this.getData(page);
 			}
 		}
 	}
 </script>
 
-<style scoped>
+<style>
 .right {
 	text-align: right;
+}
+
+.pagination {
+	list-style: none;
+	display: flex;
+}
+
+.pagination li {
+	width: 30px;
+	height: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid #D4E6F1;
+	cursor: pointer;
+}
+
+.pagination li:hover {
+	background-color: #D4E6F1;
+}
+
+.pagination li:active {
+	background-color: #2980B9;
+}
+
+.active {
+	background-color: #2980B9;
+}
+
+.pagination li a {
+	text-decoration: none;
+	display: block;
+	color: #2980B9;
+}
+
+.pagination li.active a {
+	color: white;
 }
 </style>
