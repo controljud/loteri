@@ -175,9 +175,9 @@
 			},
 
 			filtrar() {
-				// if ((this.filter.length >= 2) || (this.filter == null || this.filter == '')) {
-				// 	this.getData();
-				// }
+				if ((this.filter.length >= 2) || (this.filter == null || this.filter == '')) {
+					this.getData(1);
+				}
 			},
 
 			linkGen(page) {

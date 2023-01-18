@@ -80,6 +80,7 @@
 
             axios.get(api.sorteio_atual, this.header).then(response => {
                 this.ultimoSorteio = response.data.data;
+                console.log(this.ultimoSorteio);
                 
                 if (response.data.status == 0 && this.ultimoSorteio.dezenas == null) {
                     this.form.numero = this.ultimoSorteio.numero;

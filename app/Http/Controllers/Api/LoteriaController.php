@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Models\Sorteios;
 use App\Models\Jogos;
@@ -238,6 +237,7 @@ class LoteriaController extends Controller
                 'id_user' => Auth::id(),
                 'numero' => $request->numero,
                 'data' => $request->data,
+                'descricao' => $request->descricao,
                 'dezenas' => $dezenas
             ];
 
@@ -246,6 +246,7 @@ class LoteriaController extends Controller
             $aposta->id_user = $request->id_user;
             $aposta->numero = $request->numero;
             $aposta->data = $request->data;
+            $aposta->descricao = $request->descricao;
             $aposta->dezenas = $dezenas;
 
             $aposta->save();
@@ -301,6 +302,7 @@ class LoteriaController extends Controller
     {
         try {
             $sorteio = Sorteios::orderBy('data', 'desc')->first();
+            Log::info(json_encode($sorteio));
 
             if ($sorteio) {
                 return response()->json([
