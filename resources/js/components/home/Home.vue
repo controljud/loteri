@@ -8,10 +8,16 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<div class="dv_sorteados">
+				<div class="dv_sorteados" v-if="!carregando">
 					<div v-for="(total, index) in totais" :key="index" class="pointSorteio" v-bind:style="{background: total[1]}">
 						<span class="dezena"><span v-if="index < 10">0</span>{{index}}</span><br />
 						<span class="total" style="font-weight: bold;">{{total[0]}}</span>
+					</div>
+				</div>
+				<div class="dv_sorteados" v-if="carregando">
+					<div class="text-center text-success my-2">
+						<b-spinner class="align-middle"></b-spinner>
+						<strong>Carregando...</strong>
 					</div>
 				</div>
 			</div>
@@ -42,7 +48,9 @@
 				coluna: 0,
 
 				ultimo_sorteio: null,
-				ultima_data: null
+				ultima_data: null,
+
+				carregando: false
             }
         },
 
@@ -59,23 +67,26 @@
 
 		methods: {
             getTotais() {
+				this.carregando = true;
 				axios.get(api.totais + '/1', this.header).then(response => {
 					let retorno = response.data;
 
 					if (retorno.status == 0) {
 						let totais = retorno.data[0].totais;
 						this.totais = JSON.parse(totais);
-
-						console.log(this.totais);
 						
 						this.getMinTotal();
 					}
+
+					this.carregando = false;
 				}).catch(error => {
 					if (error.response.status == 401) {
 						localStorage.removeItem('token');
 
 						window.location.href = "/";
 					}
+
+					this.carregando = true;
 				});
 			},
 
@@ -96,12 +107,11 @@
 
 			getMinTotal() {
 				let min = 1000;
-				for (let i = 0; i < this.totais.length; i++) {
+				// for (let i = 0; i < this.totais.length; i++) {
 					// if (total < min) {
 					// 	min = total;
 					// }
-					console.log(this.totais[i]);
-				};
+				// };
 
 				// console.log(min);
 				// console.log(this.totais);

@@ -26,6 +26,7 @@
 					id="meusjogos"
 					:items="items"
 					:fields="fields"
+					:busy="isBusy" 
 				>
 					<template #cell(acertos)="item">
 						<b-form-rating v-if="item.value == 0" id="rating-6" v-model="item.value" stars="6" disabled></b-form-rating>
@@ -41,9 +42,9 @@
 					</template>
 
 					<template #table-busy>
-						<div class="text-center text-danger my-2">
+						<div class="text-center text-success my-2">
 							<b-spinner class="align-middle"></b-spinner>
-							<strong>Loading...</strong>
+							<strong>Carregando...</strong>
 						</div>
 					</template>
 				</b-table>
@@ -101,7 +102,9 @@
 				rows: 1,
 				baseUrl: null,
 				perPage: 10,
-				last_page: 1
+				last_page: 1,
+
+				isBusy: false
             }
         },
 
@@ -111,6 +114,7 @@
 
 		methods: {
 			getData(page) {
+				this.isBusy = true;
 				this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
 
 				let filtro = this.filter == null || this.filter == '' ? 0 : this.filter;
@@ -165,13 +169,14 @@
 					}
 
 					this.items = rows;
+					this.isBusy = false;
 				}).catch(error => {
 					if (error.response.status == 401) {
 						localStorage.removeItem('token');
 
 						window.location.href = "/";
 					}
-					console.log(error.data);
+					this.isBusy = false;
 				});
 			},
 
