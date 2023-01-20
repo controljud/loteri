@@ -24,12 +24,28 @@
                             </b-form-group>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
-                            <b-form-group label="Dezenas" label-for="dezenas">
-                                <b-form-input type="text" autocomplete="off" placeholder="Dezenas, separadas por vírgula (,)" v-model="form.dezenas"></b-form-input>
-                            </b-form-group>
+                            <label for="">Dezenas</label>
+                            <div class="v_dezenas">
+                                <div v-for="y in 60" :key="y" class="v_dezena" v-on:click="editDezenas(y)" :class="[dezenas.indexOf(y) > -1 ? activeClass : inactiveClass]">
+                                    <span v-if="y < 10">0{{ y }}</span>
+                                    <span v-if="y >= 10">{{ y }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ dezenas.length }}<span v-if="dezenas.length == 1"> dezena selecionada</span><span v-if="dezenas.length != 1"> dezenas selecionadas</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <a href="javascript:void(0)" class="btn btn-sm btn-light" v-on:click="limparDezenas">Limpar</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </b-form>
@@ -63,6 +79,8 @@
 					}
 				},
 
+                dezenaIndex: 0,
+                dezenas: [],
                 form: {
                     id: null,
                     numero: null,
@@ -71,7 +89,9 @@
                     dezenas: null
                 },
 
-                ultimoSorteio: null
+                ultimoSorteio: null,
+                activeClass: 'activeClass',
+                inactiveClass: ''
             }
         },
 
@@ -80,8 +100,7 @@
 
             axios.get(api.sorteio_atual, this.header).then(response => {
                 this.ultimoSorteio = response.data.data;
-                console.log(this.ultimoSorteio);
-                
+
                 if (response.data.status == 0 && this.ultimoSorteio.dezenas == null) {
                     this.form.numero = this.ultimoSorteio.numero;
                     this.form.data = this.ultimoSorteio.data;
@@ -99,15 +118,21 @@
                 if (
                     this.form.numero != null
                     && this.form.data != null
-                    // && (this.form.dezenas != null && this.validaDezenas(this.form.dezenas))
+                    && (this.dezenas.length > 5 && this.dezenas.length < 16)
                 ) {
                     let user = JSON.parse(localStorage.getItem('user'));
                     this.form.id_user = user.id;
+                    this.form.dezenas = this.dezenas.join('-');
                     
                     axios.post(api.aposta, this.form, this.header).then(response => {
                         if (response.data.status == 0) {
                             this.$toast.success("Aposta cadastrada com sucesso");
-                            $bvModal.hide('novoJogoModal');
+
+                            this.form.descricao = null;
+                            this.form.dezenas = null;
+                            this.limparDezenas();
+
+                            this.$emit('atualizarTabela');
                         } else {
                             this.$toast.warning(response.data.mensagem);
                         }
@@ -120,13 +145,18 @@
                 }
             },
 
-            validaDezenas(dezenas) {
-                let dezenasArray = dezenas.split(',');
-                if (dezenasArray.length < 6) {
-                    return false;
-                }
+            editDezenas(dezena) {
+                let index = this.dezenas.indexOf(dezena);
 
-                return true;
+                if (index > -1) {
+                    this.dezenas.splice(index, 1);
+                } else if (index < 0 && this.dezenas.length < 15) {
+                    this.dezenas.push(dezena);
+                }
+            },
+
+            limparDezenas() {
+                this.dezenas = [];
             }
         }
     }
@@ -135,5 +165,36 @@
 <style scoped>
 .right {
     text-align: right;
+}
+
+.center {
+    text-align: center;
+}
+
+.v_dezena {
+    width: 10%;
+    height: 30px;
+    margin: 1px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #D4E6F1;
+    border-radius: 5px;
+    cursor: pointer;
+    float: left;
+}
+
+.v_dezena:hover {
+    background-color: #D4E6F1;
+}
+
+.activeClass {
+    background-color: #2980B9;
+    color: white;
+}
+
+.inactiveClass {
+    background-color: white;
+    color: black;
 }
 </style>

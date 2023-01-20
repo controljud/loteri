@@ -8,13 +8,12 @@
 		</div>
 
 		<div class="row">
-			<div class="col-md-3">
+			<div class="col-md-6">
 				<b-form-group >
 					<b-form-input type="text" autocomplete="off" placeholder="Busque seus jogos" v-model="filter" v-on:keyup="filtrar"></b-form-input>
 				</b-form-group>
 			</div>
-			<div class="col-md-4"></div>
-			<div class="col-md-5 right">
+			<div class="col-md-6 right">
 				<b-button size="sm" class="btn-success" @click="$bvModal.show('novoJogoModal')">
 					<font-awesome-icon icon="fa-solid fa-plus" />
 				</b-button>
@@ -63,7 +62,9 @@
 			</div>
 		</div>
 
-		<novo-jogo-modal></novo-jogo-modal>
+		<novo-jogo-modal
+			v-on:atualizarTabela="atualizarTabela"
+		></novo-jogo-modal>
 	</div>
 </template>
 
@@ -132,7 +133,7 @@
 
 					if (response.data.data != null) {
 						let retorno = response.data.data;
-					
+
 						this.currentPage = retorno.current_page;
 						this.rows = retorno.total;
 						this.perPage = retorno.per_page;
@@ -182,6 +183,11 @@
 
 			linkGen(page) {
 				this.getData(page);
+			},
+
+			atualizarTabela() {
+				this.filter = null;
+				this.getData(1);
 			}
 		}
 	}

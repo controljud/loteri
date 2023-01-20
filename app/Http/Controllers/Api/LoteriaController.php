@@ -232,16 +232,17 @@ class LoteriaController extends Controller
     {
         try {
             $dezenas = $this->mountAposta($request->dezenas);
+            Log::info($dezenas);
 
-            $arraySend = [
-                'id_user' => Auth::id(),
-                'numero' => $request->numero,
-                'data' => $request->data,
-                'descricao' => $request->descricao,
-                'dezenas' => $dezenas
-            ];
-
+            // $arraySend = [
+            //     'id_user' => Auth::id(),
+            //     'numero' => $request->numero,
+            //     'data' => $request->data,
+            //     'descricao' => $request->descricao,
+            //     'dezenas' => $dezenas
+            // ];
             // $aposta = $this->aposta->setAposta($arraySend);
+
             $aposta = new Aposta;
             $aposta->id_user = $request->id_user;
             $aposta->numero = $request->numero;
@@ -302,7 +303,6 @@ class LoteriaController extends Controller
     {
         try {
             $sorteio = Sorteios::orderBy('data', 'desc')->first();
-            Log::info(json_encode($sorteio));
 
             if ($sorteio) {
                 return response()->json([
@@ -332,7 +332,15 @@ class LoteriaController extends Controller
     {
         $dezenas = str_replace('.', '-', str_replace(',', '-', str_replace(' ', '-', $dezenas)));
 
-        $arrayNumero = explode('-', $dezenas);
+        $arrayNum = explode('-', $dezenas);
+        $arrayNumero = [];
+        foreach ($arrayNum as $numero) {
+            if ($numero < 10 && strlen($numero) < 2) {
+                $numero = "0" . $numero;
+            }
+
+            $arrayNumero[] = $numero;
+        }
 
         usort($arrayNumero, array($this, "sortArray"));
 

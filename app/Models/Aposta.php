@@ -18,7 +18,7 @@ class Aposta extends Model
     public function getApostas($id_user, $filter, $per_page = 10)
     {
         $apostas = $this::select('lt_apostas.numero', DB::raw("date_format(lt_apostas.data, '%d/%m/%Y') AS data"), 'lt_apostas.dezenas as apostado', 'lt_apostas.descricao', 'lt_sorteios.dezenas as sorteado')
-            ->join('lt_sorteios', 'lt_sorteios.numero', 'lt_apostas.numero')
+            ->leftJoin('lt_sorteios', 'lt_sorteios.numero', 'lt_apostas.numero')
             ->where('id_user', $id_user);
         
         if ($filter != 0) {
@@ -30,7 +30,8 @@ class Aposta extends Model
             });
         }
 
-        $apostas = $apostas->orderBy('lt_apostas.id', 'desc')
+        $apostas = $apostas->orderBy('lt_apostas.numero', 'desc')
+            ->orderBy('lt_apostas.id', 'desc')
             ->paginate($per_page);
 
         return $apostas;
