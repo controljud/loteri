@@ -14,7 +14,7 @@
 				</b-form-group>
 			</div>
 			<div class="col-md-6 right">
-				<b-button size="sm" class="btn-success" @click="$bvModal.show('novoJogoModal')">
+				<b-button size="sm" class="btn-success" @click="$bvModal.show('novoJogoModal'); zeraCamposModal()">
 					<font-awesome-icon icon="fa-solid fa-plus" />
 				</b-button>
 			</div>
@@ -26,7 +26,7 @@
 					id="meusjogos"
 					:items="items"
 					:fields="fields"
-					:busy="isBusy" 
+					:busy="isBusy"
 				>
 					<template #cell(acertos)="item">
 						<b-form-rating v-if="item.value == 0" id="rating-6" v-model="item.value" stars="6" disabled></b-form-rating>
@@ -35,10 +35,16 @@
 						<b-form-rating v-if="item.value > 5" id="rating-6" v-model="item.value" stars="6" variant="success" readonly></b-form-rating>
 					</template>
 
-					<template #cell(actions)>
-						<b-button size="sm" class="btn btn-sm btn-danger">
-							<font-awesome-icon icon="fa-solid fa-trash" />
-						</b-button>
+					<template #cell(actions)="row">
+						<b-button-group>
+							<b-button size="sm" class="btn btn-sm btn-primary" @click="$bvModal.show('novoJogoModal'); edit(row.item)">
+								<font-awesome-icon icon="fa-solid fa-edit"/>
+							</b-button>
+							
+							<b-button size="sm" class="btn btn-sm btn-danger" @click="$bvModal.show('confirmModal'); doDelete(row.item)">
+								<font-awesome-icon icon="fa-solid fa-trash" />
+							</b-button>
+						</b-button-group>
 					</template>
 
 					<template #table-busy>
@@ -65,18 +71,26 @@
 
 		<novo-jogo-modal
 			v-on:atualizarTabela="atualizarTabela"
+			ref="novoJogoModal"
 		></novo-jogo-modal>
+
+		<confirm-modal
+			v-on:deleteAposta="deleteAposta"
+			ref="confirmModal"
+		></confirm-modal>
 	</div>
 </template>
 
 <script>
 	import {api} from '../../config';
-	import NovoJogoModal from '../jogos/NovoJogoModal.vue';
+	import NovoJogoModal from './NovoJogoModal.vue';
+	import ConfirmModal from './ConfirmModal.vue';
 	import Paginate from 'vuejs-paginate';
 
 	export default {
 		components: {
 			'novo-jogo-modal': NovoJogoModal,
+			'confirm-modal': ConfirmModal,
 			'paginate': Paginate
 		},
 
@@ -88,8 +102,9 @@
 					}
 				},
 				items: null,
+				item: null,
 				fields: [
-					{ key: 'numero', label: 'Sorteio', class: 'text-center' },
+					{ key: 'numero', label: 'Sorteio', class: 'text-center', isRowHeader: true },
 					{ key: 'apostado', label: 'Apostado', class: 'text-center' },
 					{ key: 'descricao', label: 'Descrição', class: 'text-left' },
 					{ key: 'data', label: 'Data Sorteio', class: 'text-center' },
@@ -109,22 +124,19 @@
         },
 
 		created: function() {
+			this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
+
 			this.getData();
 		},
 
 		methods: {
 			getData(page) {
 				this.isBusy = true;
-				this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
 
 				let filtro = this.filter == null || this.filter == '' ? 0 : this.filter;
 				let url = '';
 
-				if (page != this.currentPage) {
-					url = api.apostas + '/' + filtro + '?page=' + page;
-				} else {
-					url = api.apostas + '/' + filtro;
-				}
+				url = api.apostas + '/' + filtro + '?page=' + page;
 
 				axios.get(url, this.header).then(response => {
 					let rows = [];
@@ -192,7 +204,28 @@
 
 			atualizarTabela() {
 				this.filter = null;
-				this.getData(1);
+				this.getData(this.currentPage);
+			},
+
+			edit(item) {
+				this.$refs.novoJogoModal.preencheCampos(item);
+			},
+
+			doDelete(item) {
+				this.$refs.confirmModal.selectItem(item);
+			},
+
+			deleteAposta(item) {
+				let url = api.aposta + '/' + item.id;
+				
+				axios.delete(url, this.header).then(response => {
+					this.$toast.success("Aposta excluída com sucesso");
+					this.getData(this.currentPage);
+				});
+			},
+
+			zeraCamposModal() {
+				this.$refs.novoJogoModal.zeraCampos();
 			}
 		}
 	}

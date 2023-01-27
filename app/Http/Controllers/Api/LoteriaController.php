@@ -45,7 +45,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Usuário sem acesso a essa funcionalidade",
                 "data" => null
-            ]);
+            ], 400);
         } catch (Exception $ex) {
             Log::error("Erro na gravação do jogo: " . $ex->getMessage());
 
@@ -53,7 +53,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Erro na gravação do jogo",
                 "data" => null
-            ]);
+            ], 500);
         }
     }
 
@@ -74,7 +74,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Usuário sem acesso a essa funcionalidade",
                 "data" => null
-            ]);
+            ], 400);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
 
@@ -82,7 +82,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Erro no retorno dos dados",
                 "data" => null
-            ]);
+            ], 500);
         }
     }
 
@@ -118,7 +118,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Usuário sem acesso a essa funcionalidade",
                 "data" => null
-            ]);
+            ], 400);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
 
@@ -126,7 +126,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Erro no retorno dos dados",
                 "data" => null
-            ]);
+            ], 500);
         }
     }
 
@@ -216,7 +216,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Usuário sem acesso a essa funcionalidade",
                 "data" => null
-            ]);
+            ], 400);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
 
@@ -224,7 +224,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Erro no retorno dos dados",
                 "data" => null
-            ]);
+            ], 500);
         }
     }
 
@@ -232,18 +232,14 @@ class LoteriaController extends Controller
     {
         try {
             $dezenas = $this->mountAposta($request->dezenas);
-            Log::info($dezenas);
 
-            // $arraySend = [
-            //     'id_user' => Auth::id(),
-            //     'numero' => $request->numero,
-            //     'data' => $request->data,
-            //     'descricao' => $request->descricao,
-            //     'dezenas' => $dezenas
-            // ];
-            // $aposta = $this->aposta->setAposta($arraySend);
+            $id = $request->id;
+            if ($id != null) {
+                $aposta = Aposta::find($id);
+            } else {
+                $aposta = new Aposta;
+            }
 
-            $aposta = new Aposta;
             $aposta->id_user = $request->id_user;
             $aposta->numero = $request->numero;
             $aposta->data = $request->data;
@@ -264,7 +260,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Erro na gravação da aposta",
                 "data" => null
-            ]);
+            ], 500);
         }
     }
 
@@ -287,7 +283,7 @@ class LoteriaController extends Controller
                 "status" => 0,
                 "message" => "Não há apostas cadastradas para o usuário informado",
                 "data" => null
-            ]);
+            ], 400);
         } catch (Exception $ex) {
             Log::error("Erro no retorno das apostas: " . $ex->getMessage());
 
@@ -295,7 +291,37 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Erro no retorno das apostas",
                 "data" => null
-            ]);
+            ], 500);
+        }
+    }
+
+    public function deleteAposta(Request $request, $id)
+    {
+        try {
+            $aposta = Aposta::find($id);
+            if ($id != null && $aposta = Aposta::where('id', $id)->first()) {
+                $aposta->delete();
+
+                return response()->json([
+                    "status" => 1,
+                    "message" => "Aposta excluída com sucesso",
+                    "data" => $aposta
+                ]);
+            }
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Aposta não encontrada",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro ao excluir aposta: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Erro ao excluir aposta",
+                "data" => null
+            ], 500);
         }
     }
 
@@ -303,12 +329,16 @@ class LoteriaController extends Controller
     {
         try {
             $sorteio = Sorteios::orderBy('data', 'desc')->first();
+            $now = Carbon::now();
 
             if ($sorteio) {
                 return response()->json([
                     "status" => 0,
                     "message" => "Sorteio recuperado com sucesso",
-                    "data" => $sorteio
+                    "data" => [
+                        $sorteio,
+                        $now->toDateString()
+                    ]
                 ]);
             }
 
@@ -316,7 +346,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Não há sorteios futuros",
                 "data" => null
-            ]);
+            ], 400);
         } catch (Exception $ex) {
             Log::error("Erro na recuperação do sorteio: " . $ex->getMessage());
 
@@ -324,7 +354,7 @@ class LoteriaController extends Controller
                 "status" => 1,
                 "message" => "Erro na recuperação do sorteio",
                 "data" => null
-            ]);
+            ], 500);
         }
     }
 

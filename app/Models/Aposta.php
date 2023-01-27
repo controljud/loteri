@@ -17,7 +17,7 @@ class Aposta extends Model
 
     public function getApostas($id_user, $filter, $per_page = 10)
     {
-        $apostas = $this::select('lt_apostas.numero', DB::raw("date_format(lt_apostas.data, '%d/%m/%Y') AS data"), 'lt_apostas.dezenas as apostado', 'lt_apostas.descricao', 'lt_sorteios.dezenas as sorteado')
+        $apostas = $this::select('lt_apostas.id', 'lt_apostas.numero', DB::raw("date_format(lt_sorteios.data, '%d/%m/%Y') AS data"), DB::raw("date_format(lt_apostas.data, '%d/%m/%Y') AS data_aposta"), 'lt_apostas.dezenas as apostado', 'lt_apostas.descricao', 'lt_sorteios.dezenas as sorteado')
             ->leftJoin('lt_sorteios', 'lt_sorteios.numero', 'lt_apostas.numero')
             ->where('id_user', $id_user);
         

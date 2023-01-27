@@ -40,5 +40,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get('/totais/{id_jogo}', 'App\Http\Controllers\Api\LoteriaController@getTotais');
 
     Route::post('/aposta', 'App\Http\Controllers\Api\LoteriaController@postAposta');
+    Route::delete('/aposta/{id}', 'App\Http\Controllers\Api\LoteriaController@deleteAposta');
+    
     Route::get('/apostas/{filter}', 'App\Http\Controllers\Api\LoteriaController@getApostas');
 });

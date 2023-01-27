@@ -11,7 +11,7 @@
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Data do sorteio" label-for="data">
+                            <b-form-group label="Data da aposta" label-for="data">
                                 <b-form-input type="date" v-model="form.data"></b-form-input>
                             </b-form-group>
                         </div>
@@ -28,8 +28,8 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label for="">Dezenas</label>
-                            <div class="v_dezenas">
-                                <div v-for="y in 60" :key="y" class="v_dezena" v-on:click="editDezenas(y)" :class="[dezenas.indexOf(y) > -1 ? activeClass : inactiveClass]">
+                            <div class="v_dezenas" :key="v_dezenas">
+                                <div v-for="y in tamanho" :key="y" class="v_dezena" v-on:click="editDezenas(y)" :class="[dezenas.indexOf(y) > -1 ? activeClass : inactiveClass]" :ref="'dezena_' + y" :id="'dezena_' + y">
                                     <span v-if="y < 10">0{{ y }}</span>
                                     <span v-if="y >= 10">{{ y }}</span>
                                 </div>
@@ -53,13 +53,14 @@
                 <hr />
 
                 <div class="row">
-                    <div class="col-md-10 right">
+                    <div class="col-md-12 right">
                         <b-button type="button" variant="success" block @click="salvarSorteio">
                             <font-awesome-icon icon="fa-solid fa-save" />
                         </b-button>
-                    </div>
-                    <div class="col-md-2 right">
-                        
+
+                        <b-button type="button" variant="light" block >
+                            <font-awesome-icon icon="fa-solid fa-close" @click="$bvModal.hide('novoJogoModal');"/>
+                        </b-button>
                     </div>
                 </div>
             </div>
@@ -71,6 +72,10 @@
     import {api} from './../../config';
 
     export default {
+        props: [
+            'item'
+        ],
+
         data() {
             return {
                 header: {
@@ -81,6 +86,7 @@
 
                 dezenaIndex: 0,
                 dezenas: [],
+                tamanho: 60,
                 form: {
                     id: null,
                     numero: null,
@@ -91,7 +97,9 @@
 
                 ultimoSorteio: null,
                 activeClass: 'activeClass',
-                inactiveClass: ''
+                inactiveClass: '',
+                v_dezenas: 0, 
+                hoje: null
             }
         },
 
@@ -99,14 +107,15 @@
             this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
 
             axios.get(api.sorteio_atual, this.header).then(response => {
-                this.ultimoSorteio = response.data.data;
+                this.ultimoSorteio = response.data.data[0];
+                this.hoje = response.data.data[1];
 
                 if (response.data.status == 0 && this.ultimoSorteio.dezenas == null) {
-                    this.form.numero = this.ultimoSorteio.numero;
-                    this.form.data = this.ultimoSorteio.data;
+                    this.form.numero = this.ultimoSorteio.numero + 1;
+                    this.form.data = this.hoje;
                 } else {
-                    this.form.numero = (this.ultimoSorteio.numero);
-                    this.form.data = this.ultimoSorteio.data;
+                    this.form.numero = (this.ultimoSorteio.numero) + 1;
+                    this.form.data = this.hoje;
                 }
             }).catch(error => {
                 console.log(error);
@@ -130,7 +139,7 @@
 
                             this.form.descricao = null;
                             this.form.dezenas = null;
-                            this.limparDezenas();
+                            this.zeraCampos();
 
                             this.$emit('atualizarTabela');
                         } else {
@@ -157,6 +166,44 @@
 
             limparDezenas() {
                 this.dezenas = [];
+            },
+            
+            preencheCampos(item) {
+                this.form.id = item.id;
+                this.form.descricao = item.descricao;
+                this.form.numero = item.numero;
+
+                let dt = item.data_aposta.split('/');
+                this.form.data = dt[2] + '-' + dt[1] + '-' + dt[0];
+                
+                this.dezenas = [];
+                let dezenas = item.apostado.split('-');
+                for (let i = 0; i < dezenas.length; i++) {
+                    this.dezenas.push(dezenas[i] * 1);
+                }
+
+                this.selectDezenas();
+            },
+
+            zeraCampos() {
+                this.form.id = null;
+                this.form.descricao = null;
+                this.form.numero = this.ultimoSorteio.numero + 1;
+                this.form.data = this.hoje;
+
+                this.limparDezenas();
+            },
+
+            selectDezenas() {
+                setTimeout(() => {
+                    for (let i = 1; i <= this.tamanho; i++) {
+                        if (this.dezenas.indexOf(numero) > -1) {
+                            let elementz = 'dezena_' + i.toString();
+
+                            this.$refs[elementz][0].classList.add('activeClass');
+                        }
+                    }
+                }, 400);
             }
         }
     }
