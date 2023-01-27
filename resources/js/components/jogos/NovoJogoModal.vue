@@ -132,10 +132,10 @@
                     let user = JSON.parse(localStorage.getItem('user'));
                     this.form.id_user = user.id;
                     this.form.dezenas = this.dezenas.join('-');
-                    
+
                     axios.post(api.aposta, this.form, this.header).then(response => {
                         if (response.data.status == 0) {
-                            this.$toast.success("Aposta cadastrada com sucesso");
+                            this.$toast.success(response.data.message);
 
                             this.form.descricao = null;
                             this.form.dezenas = null;
@@ -143,14 +143,18 @@
 
                             this.$emit('atualizarTabela');
                         } else {
-                            this.$toast.warning(response.data.mensagem);
+                            this.$toast.warning(response.data.mensage);
                         }
                     }).catch(error => {
-                        console.log(error);
-                        this.$toast.danger("Erro reportado. Tente novamente mais tarde");
+                        console.log(error.response.data.message);
+                        if (error.response.status == 400) {
+                            this.$toast.warning(error.response.data.message);
+                        } else {
+                            this.$toast.error(error.response.data.message);
+                        }
                     });
                 } else {
-                    this.$toast.warning("Preencha todos os campos");
+                    this.$toast.warning("Preencha todos os campos obrigatórios");
                 }
             },
 

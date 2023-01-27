@@ -183,11 +183,14 @@
 					this.items = rows;
 					this.isBusy = false;
 				}).catch(error => {
+					this.items = null;
+					
 					if (error.response.status == 401) {
 						localStorage.removeItem('token');
 
 						window.location.href = "/";
 					}
+
 					this.isBusy = false;
 				});
 			},
@@ -219,8 +222,14 @@
 				let url = api.aposta + '/' + item.id;
 				
 				axios.delete(url, this.header).then(response => {
-					this.$toast.success("Aposta excluída com sucesso");
+					this.$toast.success(response.data.message);
 					this.getData(this.currentPage);
+				}).catch(error => {
+					if (error.response.status == 400) {
+						this.$toast.warning(error.response.data.message);
+					} else {
+						this.$toast.error(error.response.data.message);
+					}
 				});
 			},
 
