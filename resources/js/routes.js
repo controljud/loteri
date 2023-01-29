@@ -1,5 +1,5 @@
 import Home from './components/home/Home.vue';
-import MeusJogos from './components/jogos/MeusJogos.vue';
+import Apostas from './components/apostas/Apostas.vue';
 
 export default [
 	{
@@ -9,9 +9,9 @@ export default [
 		meta: {}
 	},
 	{
-		path: '/meus-jogos',
-		name: 'meus-jogos',
-		component: MeusJogos,
+		path: '/apostas',
+		name: 'apostas',
+		component: Apostas,
 		meta: {}
 	}
 ];

@@ -203,20 +203,20 @@ class JogoController extends Controller
         }
     }
 
-    // public function getUltimoJogo(Request $request, $id_jogo)
-    // {
-    //     try {
-    //         $ultimo = Sorteios::where('id_jogo', $id_jogo)->whereNotNull('dezenas')->orderBy('numero', 'desc')->first();
+    public function getUltimoJogo(Request $request, $id_jogo)
+    {
+        try {
+            $ultimo = Sorteios::where('id_jogo', $id_jogo)->whereNotNull('dezenas')->orderBy('numero', 'desc')->first();
 
-    //         return response()->json([
-    //             "status" => 0,
-    //             "message" => "Último sorteio Mega Sena",
-    //             "data" => $ultimo
-    //         ]);
-    //     } catch (Exception $ex) {
+            return response()->json([
+                "status" => 0,
+                "message" => "Último sorteio Mega Sena",
+                "data" => $ultimo
+            ]);
+        } catch (Exception $ex) {
 
-    //     }
-    // }
+        }
+    }
 
     public function getTotais(Request $request, $id_jogo)
     {

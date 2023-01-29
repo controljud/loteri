@@ -2,8 +2,8 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				<h3>Meus Jogos</h3>
-				<p>Aqui estão seus jogos feitos. Tenha vários dados sobre seus jogos</p>
+				<h3>Minhas Apostas</h3>
+				<p>Aqui estão suas apostas realizadas. Tenha vários dados sobre todos os seus jogos preferidos</p>
 			</div>
 		</div>
 
@@ -14,7 +14,7 @@
 				</b-form-group>
 			</div>
 			<div class="col-md-6 right">
-				<b-button size="sm" class="btn-success" @click="$bvModal.show('novoJogoModal'); zeraCamposModal()">
+				<b-button size="sm" class="btn-success" @click="$bvModal.show('novaApostaModal'); zeraCamposModal()">
 					<font-awesome-icon icon="fa-solid fa-plus" />
 				</b-button>
 			</div>
@@ -37,7 +37,7 @@
 
 					<template #cell(actions)="row">
 						<b-button-group>
-							<b-button size="sm" class="btn btn-sm btn-primary" @click="$bvModal.show('novoJogoModal'); edit(row.item)">
+							<b-button size="sm" class="btn btn-sm btn-primary" @click="$bvModal.show('novaApostaModal'); edit(row.item)">
 								<font-awesome-icon icon="fa-solid fa-edit"/>
 							</b-button>
 							
@@ -69,10 +69,10 @@
 			</div>
 		</div>
 
-		<novo-jogo-modal
+		<nova-aposta-modal
 			v-on:atualizarTabela="atualizarTabela"
-			ref="novoJogoModal"
-		></novo-jogo-modal>
+			ref="novaApostaModal"
+		></nova-aposta-modal>
 
 		<confirm-modal
 			v-on:deleteAposta="deleteAposta"
@@ -83,13 +83,13 @@
 
 <script>
 	import {api} from '../../config';
-	import NovoJogoModal from './NovoJogoModal.vue';
+	import NovaApostaModal from './NovaApostaModal.vue';
 	import ConfirmModal from './ConfirmModal.vue';
 	import Paginate from 'vuejs-paginate';
 
 	export default {
 		components: {
-			'novo-jogo-modal': NovoJogoModal,
+			'nova-aposta-modal': NovaApostaModal,
 			'confirm-modal': ConfirmModal,
 			'paginate': Paginate
 		},
@@ -210,7 +210,7 @@
 			},
 
 			edit(item) {
-				this.$refs.novoJogoModal.preencheCampos(item);
+				this.$refs.novaApostaModal.preencheCampos(item);
 			},
 
 			doDelete(item) {
@@ -233,7 +233,7 @@
 			},
 
 			zeraCamposModal() {
-				this.$refs.novoJogoModal.zeraCampos();
+				this.$refs.novaApostaModal.zeraCampos();
 			}
 		}
 	}

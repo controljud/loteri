@@ -1,7 +1,7 @@
 <template>
     <div>
-        <b-modal id="novoJogoModal" hide-footer hide-header-close>
-            <template #modal-title>Novo Jogo</template>
+        <b-modal id="novaApostaModal" hide-footer hide-header-close>
+            <template #modal-title>Nova Aposta</template>
             <div class="d-block text-left">
                 <b-form>
                     <div class="row">
@@ -178,7 +178,6 @@
             preencheCampos(item) {
                 this.form.id = item.id;
                 this.form.descricao = item.descricao != null ? item.descricao : '';
-                console.log(this.form.descricao);
                 this.form.numero = item.numero;
 
                 let dt = item.data_aposta.split('/');

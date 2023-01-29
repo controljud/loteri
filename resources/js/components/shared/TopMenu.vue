@@ -12,7 +12,7 @@
 					<b-nav-item class="nav-link" @click="$bvModal.show('loginModal')" v-if="!logged">Login</b-nav-item>
 					<b-nav-item class="nav-link" @click="$bvModal.show('cadastroModal')" v-if="!logged">Cadastre-se</b-nav-item>
 					<b-nav-item><router-link :to="{name: 'home'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-home" /> Home</router-link></b-nav-item>
-					<b-nav-item><router-link :to="{name: 'meus-jogos'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-star" /> Meus jogos</router-link></b-nav-item>
+					<b-nav-item><router-link :to="{name: 'apostas'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-star" /> Apostas</router-link></b-nav-item>
 					<b-nav-item><a class="nav-link" v-if="logged" @click="sair"><font-awesome-icon icon="fa-solid fa-close" /> Sair</a></b-nav-item>
 				</b-navbar-nav>
 			</b-collapse>
