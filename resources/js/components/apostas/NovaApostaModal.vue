@@ -39,7 +39,7 @@
                             
                             <div class="row">
                                 <div class="col-md-12">
-                                    {{ dezenas.length }}<span v-if="dezenas.length == 1"> dezena selecionada</span><span v-if="dezenas.length != 1"> dezenas selecionadas</span>
+                                    <span class="caracteres">{{ dezenas.length }}<span v-if="dezenas.length == 1"> dezena selecionada</span><span v-if="dezenas.length != 1"> dezenas selecionadas</span></span>
                                 </div>
                             </div>
 
