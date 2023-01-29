@@ -6,12 +6,12 @@
                 <b-form>
                     <div class="row">
                         <div class="col-md-6">
-                            <b-form-group label="Numero do sorteio" label-for="numero">
+                            <b-form-group label="Numero do sorteio *" label-for="numero">
                                 <b-form-input id="numero" type="text" autocomplete="off" v-model="form.numero"></b-form-input>
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Data da aposta" label-for="data">
+                            <b-form-group label="Data da aposta *" label-for="data">
                                 <b-form-input type="date" v-model="form.data"></b-form-input>
                             </b-form-group>
                         </div>
@@ -20,14 +20,16 @@
                     <div class="row">
                         <div class="col-md-12">
                             <b-form-group label="Descrição" label-for="descricao">
-                                <b-form-input type="text" autocomplete="off" placeholder="Que tipo de aposta é? Pessoal, Bolão..." v-model="form.descricao"></b-form-input>
+                                <b-form-input type="text" autocomplete="off" placeholder="Que tipo de aposta é? Pessoal, Bolão..." v-model="form.descricao" maxlength=42></b-form-input>
+                                <span v-if="form.descricao.length == 1" class="caracteres">{{ form.descricao.length }} caracter</span>
+                                <span v-if="form.descricao.length != 1" class="caracteres">{{ form.descricao.length }} caracteres</span>
                             </b-form-group>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12">
-                            <label for="">Dezenas</label>
+                            <label for="">Dezenas *</label>
                             <div class="v_dezenas" :key="v_dezenas">
                                 <div v-for="y in tamanho" :key="y" class="v_dezena" v-on:click="editDezenas(y)" :class="[dezenas.indexOf(y) > -1 ? activeClass : inactiveClass]" :ref="'dezena_' + y" :id="'dezena_' + y">
                                     <span v-if="y < 10">0{{ y }}</span>
@@ -91,7 +93,7 @@
                     id: null,
                     numero: null,
                     data: null,
-                    descricao: null,
+                    descricao: '',
                     dezenas: null
                 },
 
@@ -132,12 +134,13 @@
                     let user = JSON.parse(localStorage.getItem('user'));
                     this.form.id_user = user.id;
                     this.form.dezenas = this.dezenas.join('-');
+                    this.form.descricao = this.form.descricao != '' ? this.form.descricao : null;
 
                     axios.post(api.aposta, this.form, this.header).then(response => {
                         if (response.data.status == 0) {
                             this.$toast.success(response.data.message);
 
-                            this.form.descricao = null;
+                            this.form.descricao = '';
                             this.form.dezenas = null;
                             this.zeraCampos();
 
@@ -174,7 +177,8 @@
             
             preencheCampos(item) {
                 this.form.id = item.id;
-                this.form.descricao = item.descricao;
+                this.form.descricao = item.descricao != null ? item.descricao : '';
+                console.log(this.form.descricao);
                 this.form.numero = item.numero;
 
                 let dt = item.data_aposta.split('/');
@@ -191,7 +195,7 @@
 
             zeraCampos() {
                 this.form.id = null;
-                this.form.descricao = null;
+                this.form.descricao = '';
                 this.form.numero = this.ultimoSorteio.numero + 1;
                 this.form.data = this.hoje;
 
@@ -247,5 +251,9 @@
 .inactiveClass {
     background-color: white;
     color: black;
+}
+
+.caracteres {
+    font-size: 9px;
 }
 </style>

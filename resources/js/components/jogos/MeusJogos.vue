@@ -29,10 +29,10 @@
 					:busy="isBusy"
 				>
 					<template #cell(acertos)="item">
-						<b-form-rating v-if="item.value == 0" id="rating-6" v-model="item.value" stars="6" disabled></b-form-rating>
-						<b-form-rating v-if="item.value > 0 && item.value <= 3" id="rating-6" v-model="item.value" stars="6" variant="warning" readonly></b-form-rating>
-						<b-form-rating v-if="item.value > 3 && item.value <= 5" id="rating-6" v-model="item.value" stars="6" variant="primary" readonly></b-form-rating>
-						<b-form-rating v-if="item.value > 5" id="rating-6" v-model="item.value" stars="6" variant="success" readonly></b-form-rating>
+						<b-form-rating v-if="item.value == 0" id="rating-6" v-model="item.value" stars="6" disabled  style="max-width: 175px; margin: 0 auto;"></b-form-rating>
+						<b-form-rating v-if="item.value > 0 && item.value <= 3" id="rating-6" v-model="item.value" stars="6" variant="warning" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
+						<b-form-rating v-if="item.value > 3 && item.value <= 5" id="rating-6" v-model="item.value" stars="6" variant="primary" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
+						<b-form-rating v-if="item.value > 5" id="rating-6" v-model="item.value" stars="6" variant="success" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
 					</template>
 
 					<template #cell(actions)="row">
@@ -108,7 +108,6 @@
 					{ key: 'apostado', label: 'Apostado', class: 'text-center' },
 					{ key: 'descricao', label: 'Descrição', class: 'text-left' },
 					{ key: 'data', label: 'Data Sorteio', class: 'text-center' },
-					{ key: 'sorteado', label: 'Sorteio', class: 'text-center' },
 					{ key: 'acertos', label: 'Acertos', class: 'text-center' },
 					{ key: 'actions', label: 'Ações', class: 'text-center' }
 				],
@@ -126,7 +125,7 @@
 		created: function() {
 			this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
 
-			this.getData();
+			this.getData(this.currentPage);
 		},
 
 		methods: {

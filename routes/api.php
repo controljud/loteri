@@ -23,24 +23,23 @@ Route::post('/login', 'App\Http\Controllers\Api\LoginController@login');
 Route::post('/cadastro', 'App\Http\Controllers\Api\LoginController@cadastro');
 
 Route::group(['middleware' => ['jwt.auth']], function () {
-    Route::group(['prefix' => 'mega'], function() {
-        Route::get('/sorteados', 'App\Http\Controllers\Api\MegaSenaController@getDadosSorteados');
-
-        Route::get('/sorteio/atual', 'App\Http\Controllers\Api\LoteriaController@getSorteioAtual');    
-        Route::post('/sorteio', 'App\Http\Controllers\Api\MegaSenaController@postSorteio');
+    Route::group(['prefix' => 'jogo'], function() {
+        Route::post('/', 'App\Http\Controllers\Api\JogoController@postJogo');
+        Route::put('/', 'App\Http\Controllers\Api\JogoController@putJogo');
+        Route::get('/jogos', 'App\Http\Controllers\Api\JogoController@getJogos');
         
-        Route::put('/update', 'App\Http\Controllers\Api\MegaSenaController@putUpdate');
+        Route::get('/sorteio/atual', 'App\Http\Controllers\Api\JogoController@getSorteioAtual');
+        Route::post('/sorteio', 'App\Http\Controllers\Api\JogoController@postSorteio');
+        // Route::get('/ultimo/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getUltimoJogo');
+
+        Route::put('/totais', 'App\Http\Controllers\Api\JogoController@putTotais');
+        Route::get('/totais/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getTotais');
     });
 
-    Route::post('/jogo', 'App\Http\Controllers\Api\LoteriaController@postJogo');
-    Route::get('/jogos', 'App\Http\Controllers\Api\LoteriaController@getJogos');
-    Route::get('/ultimo/jogo/{id_jogo}', 'App\Http\Controllers\Api\LoteriaController@getUltimoJogo');
-    
-    Route::put('/totais', 'App\Http\Controllers\Api\LoteriaController@putTotais');
-    Route::get('/totais/{id_jogo}', 'App\Http\Controllers\Api\LoteriaController@getTotais');
-
-    Route::post('/aposta', 'App\Http\Controllers\Api\LoteriaController@postAposta');
-    Route::delete('/aposta/{id}', 'App\Http\Controllers\Api\LoteriaController@deleteAposta');
-    
-    Route::get('/apostas/{filter}', 'App\Http\Controllers\Api\LoteriaController@getApostas');
+    Route::group(['prefix' => 'aposta'], function() {
+        Route::post('/', 'App\Http\Controllers\Api\ApostaController@postAposta');
+        Route::delete('/{id}', 'App\Http\Controllers\Api\ApostaController@deleteAposta');
+        
+        Route::get('/apostas/{filter}', 'App\Http\Controllers\Api\ApostaController@getApostas');
+    });
 });
