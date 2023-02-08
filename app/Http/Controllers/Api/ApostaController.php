@@ -121,6 +121,37 @@ class ApostaController extends Controller
         }
     }
 
+    public function getQuantidadeApostas()
+    {
+        try {
+            if ($this->isAdminUser()) {
+                $quantidade = Aposta::count();
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Quantidade retornada com sucesso",
+                    'data' => [
+                        'quantidade' => $quantidade
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => "Você não tem acesso para usar essa funcionalidade",
+                'data' => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("QUANTIDADE APOSTAS: " . $ex->getMessage());
+            
+            return response()->json([
+                'status' => 1,
+                'message' => "Ocorreu um erro na execução do serviço",
+                'data' => null
+            ], 500);
+        }
+    }
+
     private function mountAposta($dezenas)
     {
         $dezenas = str_replace('.', '-', str_replace(',', '-', str_replace(' ', '-', $dezenas)));
@@ -147,5 +178,10 @@ class ApostaController extends Controller
         }
         
         return ($a[0] < $b[0]) ? -1 : 1;
+    }
+
+    private function isAdminUser()
+    {
+        return User::where('users.id', Auth::id())->join('lt_admin_users', 'users.id', 'lt_admin_users.id_user')->exists();
     }
 }

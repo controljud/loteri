@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class LoginController extends Controller
 {
@@ -59,5 +61,41 @@ class LoginController extends Controller
             ]
         ];
         return response()->json($retorno);
+    }
+
+    public function getQuantidadeUsuarios()
+    {
+        try {
+            if ($this->isAdminUser()) {
+                $quantidade = User::count();
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Quantidade retornada com sucesso",
+                    'data' => [
+                        'quantidade' => $quantidade
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => "Você não tem acesso para usar essa funcionalidade",
+                'data' => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("QUANTIDADE USUARIO: " . $ex->getMessage());
+            
+            return response()->json([
+                'status' => 1,
+                'message' => "Ocorreu um erro na execução do serviço",
+                'data' => null
+            ], 500);
+        }
+    }
+
+    private function isAdminUser()
+    {
+        return User::where('users.id', Auth::id())->join('lt_admin_users', 'users.id', 'lt_admin_users.id_user')->exists();
     }
 }

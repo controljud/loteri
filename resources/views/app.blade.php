@@ -12,8 +12,8 @@
         <script>
             window.Laravel = {!! json_encode([
                 'csrfToken' => csrf_token(),
-                'siteName'  => config('app.name'),
-                'apiDomain' => config('app.url').'/api'
+                'siteName'  => env('APP_NAME'),
+                'apiDomain' => env('APP_URL').'/api'
             ]) !!}
         </script>
     </head>

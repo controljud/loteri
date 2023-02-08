@@ -89,11 +89,14 @@ class JogoController extends Controller
         }
     }
 
-    public function putJogo()
+    public function putJogo(Request $request)
     {
         if ($this->isAdminUser()) {
             set_time_limit(0);
             try {
+                $id_jogo = $request->id_jogo;
+                // todo: Atualizar de acordo com o ID enviado
+
                 $url = file_get_contents('https://asloterias.com.br/lista-de-resultados-da-mega-sena');
 
                 $regexp = "/A lista abaixo mostra, o concurso, a data do sorteio e os números sorteados!(.+)Se você quiser fazer o download todos resultados para seu computador, clique no link abaixo/";
@@ -157,7 +160,9 @@ class JogoController extends Controller
                 return response()->json([
                     "status" => 0,
                     "message" => $adicionados . " sorteios criados com sucesso",
-                    "data" => null
+                    "data" => [
+                        'adicionados' => $adicionados
+                    ]
                 ]);
             } catch (Exception $ex) {
                 Log::error("Erro na execução do serviço: " . $ex->getMessage());
@@ -374,6 +379,98 @@ class JogoController extends Controller
                 "status" => 1,
                 "message" => "Erro na recuperação do sorteio",
                 "data" => null
+            ], 500);
+        }
+    }
+
+    public function getSorteios(Request $request, $id_jogo)
+    {
+        try {
+            $sorteiosModel = new Sorteios;
+            $sorteios = $sorteiosModel->getSorteios($id_jogo);
+
+            if ($sorteios) {
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Sorteios recuperados com sucesso",
+                    "data" => $sorteios
+                ]);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Não há sorteios na base",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro na recuperação do sorteio: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro na recuperação do sorteio",
+                "data" => null
+            ], 500);
+        }
+    }
+
+    public function getQuantidadeJogos()
+    {
+        try {
+            if ($this->isAdminUser()) {
+                $quantidade = Jogos::count();
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Quantidade retornada com sucesso",
+                    'data' => [
+                        'quantidade' => $quantidade
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => "Você não tem acesso para usar essa funcionalidade",
+                'data' => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("QUANTIDADE JOGOS: " . $ex->getMessage());
+            
+            return response()->json([
+                'status' => 1,
+                'message' => "Ocorreu um erro na execução do serviço",
+                'data' => null
+            ], 500);
+        }
+    }
+
+    public function getQuantidadeSorteios()
+    {
+        try {
+            if ($this->isAdminUser()) {
+                $quantidade = Sorteios::count();
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Quantidade retornada com sucesso",
+                    'data' => [
+                        'quantidade' => $quantidade
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => "Você não tem acesso para usar essa funcionalidade",
+                'data' => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("QUANTIDADE SORTEIOS: " . $ex->getMessage());
+            
+            return response()->json([
+                'status' => 1,
+                'message' => "Ocorreu um erro na execução do serviço",
+                'data' => null
             ], 500);
         }
     }
