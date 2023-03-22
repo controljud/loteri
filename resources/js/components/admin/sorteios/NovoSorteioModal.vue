@@ -11,8 +11,16 @@
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Data da aposta *" label-for="data">
+                            <b-form-group label="Data do Sorteio *" label-for="data">
                                 <b-form-input type="date" v-model="form.data"></b-form-input>
+                            </b-form-group>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <b-form-group label="Prêmio" label-for="premio">
+                                <b-form-input type="number" autocomplete="off" v-model="form.premio"></b-form-input>
                             </b-form-group>
                         </div>
                     </div>
@@ -26,7 +34,7 @@
                                     <span v-if="y >= 10">{{ y }}</span>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-12">
                                     <span class="caracteres">{{ dezenas.length }}<span v-if="dezenas.length == 1"> dezena selecionada</span><span v-if="dezenas.length != 1"> dezenas selecionadas</span></span>
@@ -41,7 +49,7 @@
                         </div>
                     </div>
                 </b-form>
-                
+
                 <hr />
 
                 <div class="row">
@@ -64,7 +72,7 @@
     import {api} from '../../../config';
     export default {
         props: [
-            'item'
+            'item', 'idJogo'
         ],
 
         data() {
@@ -80,17 +88,19 @@
                 tamanho: 60,
                 form: {
                     id: null,
+                    id_jogo: null,
                     numero: null,
+                    dezenas: null,
                     data: null,
-                    descricao: '',
-                    dezenas: null
+                    premio: null
                 },
 
                 ultimoSorteio: null,
                 activeClass: 'activeClass',
                 inactiveClass: '',
                 v_dezenas: 0, 
-                hoje: null
+                hoje: null,
+                totalDezenas: 6
             }
         },
 
@@ -115,38 +125,39 @@
 
         methods: {
             salvarSorteio() {
-                if (
-                    this.form.numero != null
-                    && this.form.data != null
-                    && (this.dezenas.length > 5 && this.dezenas.length < 16)
-                ) {
-                    let user = JSON.parse(localStorage.getItem('user'));
-                    this.form.id_user = user.id;
-                    this.form.dezenas = this.dezenas.join('-');
-                    this.form.descricao = this.form.descricao != '' ? this.form.descricao : null;
+                if (this.dezenas.length == this.totalDezenas) {
+                    if (
+                        this.form.numero != null
+                        && this.form.data != null
+                        && (this.dezenas.length > 5 && this.dezenas.length < 16)
+                    ) {
+                        this.form.id_jogo = this.idJogo;
+                        this.form.dezenas = this.dezenas.join('-');
 
-                    axios.post(api.aposta, this.form, this.header).then(response => {
-                        if (response.data.status == 0) {
-                            this.$toast.success(response.data.message);
+                        axios.post(api.sorteio, this.form, this.header).then(response => {
+                            if (response.data.status == 0) {
+                                this.$toast.success(response.data.message);
 
-                            this.form.descricao = '';
-                            this.form.dezenas = null;
-                            this.zeraCampos();
+                                this.form.dezenas = null;
+                                this.zeraCampos();
 
-                            this.$emit('atualizarTabela');
-                        } else {
-                            this.$toast.warning(response.data.mensage);
-                        }
-                    }).catch(error => {
-                        console.log(error.response.data.message);
-                        if (error.response.status == 400) {
-                            this.$toast.warning(error.response.data.message);
-                        } else {
-                            this.$toast.error(error.response.data.message);
-                        }
-                    });
+                                this.$emit('atualizarTabela');
+                            } else {
+                                this.$toast.warning(response.data.mensage);
+                            }
+                        }).catch(error => {
+                            console.log(error.response.data.message);
+                            if (error.response.status == 400) {
+                                this.$toast.warning(error.response.data.message);
+                            } else {
+                                this.$toast.error(error.response.data.message);
+                            }
+                        });
+                    } else {
+                        this.$toast.warning("Preencha todos os campos obrigatórios");
+                    }
                 } else {
-                    this.$toast.warning("Preencha todos os campos obrigatórios");
+                    this.$toast.warning("É obrigatório o preenchimento de exatamente " + this.totalDezenas + " dezenas");
                 }
             },
 
@@ -166,14 +177,15 @@
             
             preencheCampos(item) {
                 this.form.id = item.id;
-                this.form.descricao = item.descricao != null ? item.descricao : '';
+                this.form.id_jogo = this.idJogo;
                 this.form.numero = item.numero;
+                this.form.premio = item.premio;
 
-                let dt = item.data_aposta.split('/');
+                let dt = item.data.split('/');
                 this.form.data = dt[2] + '-' + dt[1] + '-' + dt[0];
                 
                 this.dezenas = [];
-                let dezenas = item.apostado.split('-');
+                let dezenas = item.dezenas.split('-');
                 for (let i = 0; i < dezenas.length; i++) {
                     this.dezenas.push(dezenas[i] * 1);
                 }
@@ -183,9 +195,10 @@
 
             zeraCampos() {
                 this.form.id = null;
-                this.form.descricao = '';
+                this.form.id_jogo = null;
                 this.form.numero = this.ultimoSorteio.numero + 1;
                 this.form.data = this.hoje;
+                this.form.premio = null;
 
                 this.limparDezenas();
             },

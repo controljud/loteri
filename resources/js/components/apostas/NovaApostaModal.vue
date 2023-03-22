@@ -61,7 +61,7 @@
                         </b-button>
 
                         <b-button type="button" variant="light" block >
-                            <font-awesome-icon icon="fa-solid fa-close" @click="$bvModal.hide('novoJogoModal');"/>
+                            <font-awesome-icon icon="fa-solid fa-close" @click="$bvModal.hide('novoApostaModal');"/>
                         </b-button>
                     </div>
                 </div>

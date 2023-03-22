@@ -29,12 +29,12 @@ Route::group(['middleware' => ['jwt.auth']], function () {
         Route::get('/quantidade', 'App\Http\Controllers\Api\JogoController@getQuantidadeJogos');
         Route::get('/ultimo/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getUltimoJogo');
 
-
         Route::put('/sorteios', 'App\Http\Controllers\Api\JogoController@putJogo');
         Route::get('/sorteios/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getSorteios');
         Route::get('/sorteio/atual', 'App\Http\Controllers\Api\JogoController@getSorteioAtual');
         Route::get('/sorteio/quantidade', 'App\Http\Controllers\Api\JogoController@getQuantidadeSorteios');
         Route::post('/sorteio', 'App\Http\Controllers\Api\JogoController@postSorteio');
+        Route::delete('/sorteio/{id}', 'App\Http\Controllers\Api\JogoController@deleteSorteio');
 
         Route::put('/totais', 'App\Http\Controllers\Api\JogoController@putTotais');
         Route::get('/totais/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getTotais');

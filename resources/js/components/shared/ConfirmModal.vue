@@ -5,7 +5,7 @@
             <div class="d-block text-left">
                 <div class="row">
                     <div class="col-md-12">
-                        <p>Tem certeza que deseja fazer a exclusão desse ítem?</p>
+                        <p>Tem certeza que deseja fazer a exclusão desse registro?</p>
                     </div>
                 </div>
 
@@ -35,18 +35,22 @@
 
 <script>
     export default {
+        props: [
+            'texto'
+        ],
+
         data() {
             return {
-                texto
+                item: null
             }
         },
 
         methods: {
-            excluir() {
-                this.$emit('delete', true);
+            confirmar() {
+                this.$emit('doDelete', this.item);
             },
 
-            selectItem (item) {
+            preencheItem(item) {
                 this.item = item;
             }
         }

@@ -1,59 +1,73 @@
 <template>
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Sorteios</h3>
-                <p>Aqui estão os sorteios realizados</p>
+        <div class="card card-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Sorteios</h3>
+                    <p>Aqui estão os sorteios realizados</p>
+                </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-6">
-				<b-form-select v-model="jogo" :options="jogos" size="sm" class="form-control" v-on:change="getData(1)"></b-form-select>
-			</div>
+            <div class="row">
+                <div class="col-md-6">
+                    <b-form-select v-model="jogo" :options="jogos" size="sm" class="form-control" v-on:change="getData(1)"></b-form-select>
+                </div>
 
-			<div class="col-md-6 right">
-                <b-spinner variant="primary" small label="Spinning" v-if="isLoading"></b-spinner>
+                <div class="col-md-6 right">
+                    <b-spinner variant="primary" small label="Spinning" v-if="isLoading"></b-spinner>
 
-				<b-button size="sm" variant="success" @click="$bvModal.show('novoSorteioModal');">
-					<font-awesome-icon icon="fa-solid fa-plus" />
-				</b-button>
+                    <b-button size="sm" variant="success" @click="$bvModal.show('novoSorteioModal');">
+                        <font-awesome-icon icon="fa-solid fa-plus" />
+                    </b-button>
 
-                <b-button size="sm" variant="primary">
-                    <b-icon icon="arrow-down-circle-fill" @click="updateData"></b-icon>
-                </b-button>
-			</div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <Tabela
-                    :idTabela="idTabela"
-                    :items="items"
-                    :fields="fields"
-                    :last_page="last_page"
-                    :isBusy="isBusy"
-                    v-on:linkGen="linkGen"
-                    v-on:edit="edit"
-                ></Tabela>
+                    <b-button size="sm" variant="primary">
+                        <b-icon icon="arrow-down-circle-fill" @click="updateData"></b-icon>
+                    </b-button>
+                </div>
             </div>
-        </div>
 
-        <NovoSorteioModal
-            ref="novoSorteioModal"
-        ></NovoSorteioModal>
+            <div class="row">
+                <div class="col-md-12">
+                    <Tabela
+                        :idTabela="idTabela"
+                        :items="items"
+                        :fields="fields"
+                        :last_page="last_page"
+                        :isBusy="isBusy"
+                        v-on:linkGen="linkGen"
+                        v-on:edit="edit"
+                        v-on:doConfirm="doConfirm"
+                    ></Tabela>
+                </div>
+            </div>
+
+            <NovoSorteioModal
+                :idJogo="jogo"
+                v-on:atualizarTabela="atualizarTabela"
+                ref="novoSorteioModal"
+            ></NovoSorteioModal>
+
+            <ConfirmModal
+                :texto="texto"
+                v-on:delete="doDelete"
+                ref="confirmaModal"
+            ></ConfirmModal>
+        </div>
     </div>
 </template>
 
 <script>
+import { throwStatement } from '@babel/types';
 import {api} from '../../../config';
 import Tabela from '../../shared/Tabela.vue';
 import NovoSorteioModal from './NovoSorteioModal.vue';
+import ConfirmModal from '../../shared/ConfirmModal.vue';
 
 export default ({
     components: {
         Tabela,
-        NovoSorteioModal
+        NovoSorteioModal,
+        ConfirmModal
     },
 
     data() {
@@ -65,6 +79,7 @@ export default ({
             },
             idTabela: 1,
             items: null,
+            item: null,
             fields: [
                 { key: 'numero', label: 'Sorteio', class: 'text-center', isRowHeader: true },
                 { key: 'dezenas', label: 'Dezenas', class: 'text-center' },
@@ -168,7 +183,7 @@ export default ({
             }
 
             axios.put(api.totais, body, this.header).then(retorno => {
-                console.log(retorno.data.message);
+                this.getData(1);
             });
         },
 
@@ -180,8 +195,37 @@ export default ({
             this.$bvModal.show('novoSorteioModal');
         },
 
-        doDelete(item) {
+        doConfirm(item) {
+            this.$refs.confirmaModal.preencheItem(item);
+            this.$bvModal.show('confirmaModal');
+        },
 
+        doDelete(item) {
+            if (item != null) {
+                this.deleteSorteio(item);
+            } else {
+                this.$toast.warning("Não há sorteio selecionado");
+            }
+        },
+
+        deleteSorteio(item) {
+            let url = api.sorteio + '/' + item.id;
+				
+            axios.delete(url, this.header).then(response => {
+                this.$toast.success(response.data.message);
+                this.getData(this.currentPage);
+            }).catch(error => {
+                if (error.response.status == 400) {
+                    this.$toast.warning(error.response.data.message);
+                } else {
+                    this.$toast.error(error.response.data.message);
+                }
+            });
+        },
+
+        atualizarTabela() {
+            this.$bvModal.hide('novoSorteioModal');
+            this.getData(this.currentPage);
         }
     }
 })
@@ -190,5 +234,10 @@ export default ({
 <style>
 .right {
     text-align: right;
+}
+
+.card-content {
+	margin-top: 10px;
+	padding: 10px;
 }
 </style>

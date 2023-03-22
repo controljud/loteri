@@ -1,34 +1,36 @@
 <template>
 	<div class="container">
-		<div class="row">
-			<div class="col-md-12">
-				<h3>Mapa de dezenas sorteadas</h3>
-				<p>Acompanhe aqui a quantidade de vezes que cada dezena foi sorteada na Mega Sena</p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<div class="dv_sorteados" v-if="!carregando">
-					<div v-for="(total, index) in totais" :key="index" class="pointSorteio" v-bind:style="{background: total[1]}">
-						<span class="dezena"><span v-if="index < 10">0</span>{{index}}</span><br />
-						<span class="total" style="font-weight: bold;">{{total[0]}}</span>
-					</div>
-				</div>
-				<div class="dv_sorteados" v-if="carregando">
-					<div class="text-center text-success my-2">
-						<b-spinner class="align-middle"></b-spinner>
-						<strong>Carregando...</strong>
-					</div>
+		<div class="card card-content">
+			<div class="row">
+				<div class="col-md-12">
+					<h3>Mapa de dezenas sorteadas</h3>
+					<p>Acompanhe aqui a quantidade de vezes que cada dezena foi sorteada na Mega Sena</p>
 				</div>
 			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<p><b>Último sorteio: </b>{{ultimo_sorteio}}<br />
-				{{ultima_data}}</p>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="dv_sorteados" v-if="!carregando">
+						<div v-for="(total, index) in totais" :key="index" class="pointSorteio" v-bind:style="{background: total[1]}">
+							<span class="dezena"><span v-if="index < 10">0</span>{{index}}</span><br />
+							<span class="total" style="font-weight: bold;">{{total[0]}}</span>
+						</div>
+					</div>
+					<div class="dv_sorteados" v-if="carregando">
+						<div class="text-center text-success my-2">
+							<b-spinner class="align-middle"></b-spinner>
+							<strong>Carregando...</strong>
+						</div>
+					</div>
+				</div>
 			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<p><b>Último sorteio: </b>{{ultimo_sorteio}}<br />
+					{{ultima_data}}</p>
+				</div>
+			</div>
+			<!-- Inserir a tabela com os números sorteados -->
 		</div>
-		<!-- Inserir a tabela com os números sorteados -->
 	</div>
 </template>
 
@@ -146,5 +148,10 @@
 .dv_sorteados {
 	margin: 0 auto;
 	max-width: 620px;
+}
+
+.card-content {
+	margin-top: 10px;
+	padding: 10px;
 }
 </style>

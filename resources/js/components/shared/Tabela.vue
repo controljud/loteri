@@ -78,11 +78,11 @@ export default ({
         },
 
         doDelete(item) {
-            this.$emit('doDelete', item);
+            this.$emit('doConfirm', item);
         },
 
         linkGen(page) {
-            this.$emit('linkGen', page)
+            this.$emit('linkGen', page);
         }
     }
 })

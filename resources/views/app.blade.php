@@ -16,9 +16,18 @@
                 'apiDomain' => env('APP_URL').'/api'
             ]) !!}
         </script>
+
+        <style>
+            .app {
+                background-color: #ebedef;
+                display: flex;
+                flex-flow: column;
+                height: 100vh;
+            }
+        </style>
     </head>
     <body>
-        <div id="app">
+        <div id="app" class="app">
             <app></app>
         </div>
         <script src="{{ mix('/js/app.js') }}"></script>

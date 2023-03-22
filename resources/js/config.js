@@ -5,6 +5,7 @@ export const api = {
 
     mega_sorteados: '/api/jogo/sorteados',
     sorteio_atual: '/api/jogo/sorteio/atual',
+    sorteio: '/api/jogo/sorteio',
     sorteios: '/api/jogo/sorteios',
     sorteios_quantidade: '/api/jogo/sorteio/quantidade',
 

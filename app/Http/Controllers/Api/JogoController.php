@@ -184,11 +184,14 @@ class JogoController extends Controller
     public function postSorteio(Request $request)
     {
         try {
+            $dezenas = $this->mountDezenas($request->dezenas);
+
             $sorteio = new Sorteios;
             $sorteio->id_jogo = $request->id_jogo;
             $sorteio->numero = $request->numero;
-            $sorteio->dezenas = $request->dezenas;
+            $sorteio->dezenas = $dezenas;
             $sorteio->data = $request->data;
+            $sorteio->premio = $request->premio;
 
             $sorteio->save();
 
@@ -473,6 +476,55 @@ class JogoController extends Controller
                 'data' => null
             ], 500);
         }
+    }
+
+    public function deleteSorteio(Request $request, $id)
+    {
+        try {
+            $sorteio = Sorteios::find($id);
+            if ($id != null && $sorteio = Sorteios::where('id', $id)->first()) {
+                $sorteio->delete();
+
+                return response()->json([
+                    "status" => 1,
+                    "message" => "Aposta excluída com sucesso",
+                    "data" => null
+                ]);
+            }
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Aposta não encontrada",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro ao excluir aposta: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Erro ao excluir aposta",
+                "data" => null
+            ], 500);
+        }
+    }
+
+    private function mountDezenas($dezenas)
+    {
+        $dezenas = str_replace('.', '-', str_replace(',', '-', str_replace(' ', '-', $dezenas)));
+
+        $arrayNum = explode('-', $dezenas);
+        $arrayNumero = [];
+        foreach ($arrayNum as $numero) {
+            if ($numero < 10 && strlen($numero) < 2) {
+                $numero = "0" . $numero;
+            }
+
+            $arrayNumero[] = $numero;
+        }
+
+        usort($arrayNumero, array($this, "sortArray"));
+
+        return json_encode($arrayNumero);
     }
 
     private function sortArraySimple($a, $b)

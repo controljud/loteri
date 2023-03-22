@@ -1,83 +1,85 @@
 <template>
 	<div class="container">
-		<div class="row">
-			<div class="col-md-12">
-				<h3>Minhas Apostas</h3>
-				<p>Aqui estão suas apostas realizadas. Tenha vários dados sobre todos os seus jogos preferidos</p>
+		<div class="card card-content">
+			<div class="row">
+				<div class="col-md-12">
+					<h3>Minhas Apostas</h3>
+					<p>Aqui estão suas apostas realizadas. Tenha vários dados sobre todos os seus jogos preferidos</p>
+				</div>
 			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<b-form-group >
+						<b-form-input type="text" autocomplete="off" placeholder="Busque seus jogos" v-model="filter" v-on:keyup="filtrar"></b-form-input>
+					</b-form-group>
+				</div>
+				<div class="col-md-6 right">
+					<b-button size="sm" class="btn-success" @click="$bvModal.show('novaApostaModal'); zeraCamposModal()">
+						<font-awesome-icon icon="fa-solid fa-plus" />
+					</b-button>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<b-table responsive striped hover
+						id="meusjogos"
+						:items="items"
+						:fields="fields"
+						:busy="isBusy"
+					>
+						<template #cell(acertos)="item">
+							<b-form-rating v-if="item.value == 0" id="rating-6" v-model="item.value" stars="6" disabled  style="max-width: 175px; margin: 0 auto;"></b-form-rating>
+							<b-form-rating v-if="item.value > 0 && item.value <= 3" id="rating-6" v-model="item.value" stars="6" variant="warning" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
+							<b-form-rating v-if="item.value > 3 && item.value <= 5" id="rating-6" v-model="item.value" stars="6" variant="primary" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
+							<b-form-rating v-if="item.value > 5" id="rating-6" v-model="item.value" stars="6" variant="success" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
+						</template>
+
+						<template #cell(actions)="row">
+							<b-button-group>
+								<b-button size="sm" class="btn btn-sm btn-primary" @click="$bvModal.show('novaApostaModal'); edit(row.item)">
+									<font-awesome-icon icon="fa-solid fa-edit"/>
+								</b-button>
+								
+								<b-button size="sm" class="btn btn-sm btn-danger" @click="$bvModal.show('confirmModal'); doDelete(row.item)">
+									<font-awesome-icon icon="fa-solid fa-trash" />
+								</b-button>
+							</b-button-group>
+						</template>
+
+						<template #table-busy>
+							<div class="text-center text-success my-2">
+								<b-spinner class="align-middle"></b-spinner>
+								<strong>Carregando...</strong>
+							</div>
+						</template>
+					</b-table>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<paginate
+						:page-count="last_page"
+						:click-handler="linkGen"
+						:prev-text="'<<'"
+						:next-text="'>>'"
+						:container-class="'pagination'"
+					></paginate>
+				</div>
+			</div>
+
+			<nova-aposta-modal
+				v-on:atualizarTabela="atualizarTabela"
+				ref="novaApostaModal"
+			></nova-aposta-modal>
+
+			<confirm-modal
+				v-on:deleteAposta="deleteAposta"
+				ref="confirmModal"
+			></confirm-modal>
 		</div>
-
-		<div class="row">
-			<div class="col-md-6">
-				<b-form-group >
-					<b-form-input type="text" autocomplete="off" placeholder="Busque seus jogos" v-model="filter" v-on:keyup="filtrar"></b-form-input>
-				</b-form-group>
-			</div>
-			<div class="col-md-6 right">
-				<b-button size="sm" class="btn-success" @click="$bvModal.show('novaApostaModal'); zeraCamposModal()">
-					<font-awesome-icon icon="fa-solid fa-plus" />
-				</b-button>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-md-12">
-				<b-table responsive striped hover
-					id="meusjogos"
-					:items="items"
-					:fields="fields"
-					:busy="isBusy"
-				>
-					<template #cell(acertos)="item">
-						<b-form-rating v-if="item.value == 0" id="rating-6" v-model="item.value" stars="6" disabled  style="max-width: 175px; margin: 0 auto;"></b-form-rating>
-						<b-form-rating v-if="item.value > 0 && item.value <= 3" id="rating-6" v-model="item.value" stars="6" variant="warning" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
-						<b-form-rating v-if="item.value > 3 && item.value <= 5" id="rating-6" v-model="item.value" stars="6" variant="primary" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
-						<b-form-rating v-if="item.value > 5" id="rating-6" v-model="item.value" stars="6" variant="success" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
-					</template>
-
-					<template #cell(actions)="row">
-						<b-button-group>
-							<b-button size="sm" class="btn btn-sm btn-primary" @click="$bvModal.show('novaApostaModal'); edit(row.item)">
-								<font-awesome-icon icon="fa-solid fa-edit"/>
-							</b-button>
-							
-							<b-button size="sm" class="btn btn-sm btn-danger" @click="$bvModal.show('confirmModal'); doDelete(row.item)">
-								<font-awesome-icon icon="fa-solid fa-trash" />
-							</b-button>
-						</b-button-group>
-					</template>
-
-					<template #table-busy>
-						<div class="text-center text-success my-2">
-							<b-spinner class="align-middle"></b-spinner>
-							<strong>Carregando...</strong>
-						</div>
-					</template>
-				</b-table>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-md-12">
-				<paginate
-					:page-count="last_page"
-					:click-handler="linkGen"
-					:prev-text="'<<'"
-					:next-text="'>>'"
-					:container-class="'pagination'"
-				></paginate>
-			</div>
-		</div>
-
-		<nova-aposta-modal
-			v-on:atualizarTabela="atualizarTabela"
-			ref="novaApostaModal"
-		></nova-aposta-modal>
-
-		<confirm-modal
-			v-on:deleteAposta="deleteAposta"
-			ref="confirmModal"
-		></confirm-modal>
 	</div>
 </template>
 
@@ -279,5 +281,10 @@
 
 .pagination li.active a {
 	color: white;
+}
+
+.card-content {
+	margin-top: 10px;
+	padding: 10px;
 }
 </style>
