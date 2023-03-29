@@ -46,6 +46,10 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <a href="javascript:void(0)" class="btn btn-sm btn-light" v-on:click="limparDezenas">Limpar</a>
+
+                                    <b-button type="button" variant="primary" block class="btn-sm" @click="numerosAleatorios()">
+                                        <b-icon icon="star"></b-icon> Jogo aleatório
+                                    </b-button>
                                 </div>
                             </div>
                         </div>
@@ -211,6 +215,28 @@
                         }
                     }
                 }, 400);
+            },
+
+            numerosAleatorios() {
+                let randons = [];
+
+                let acabou = false;
+                while (!acabou) {
+                    let random = parseInt(Math.random() * 61);
+
+                    if (random > 0 && random < 61) {
+                        if (randons.indexOf(random) < 0) {
+                            randons.push(random);
+                        }
+                    }
+
+                    if (randons.length > 5) {
+                        acabou = true;
+                    }
+                }
+
+                this.dezenas = randons;
+                this.selectDezenas();
             }
         }
     }
