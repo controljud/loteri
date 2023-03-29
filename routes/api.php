@@ -46,6 +46,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
         Route::delete('/{id}', 'App\Http\Controllers\Api\ApostaController@deleteAposta');
 
         Route::get('/apostas/{filter}', 'App\Http\Controllers\Api\ApostaController@getApostas');
+
+        Route::get('/apostas/mensal/total', 'App\Http\Controllers\Api\ApostaController@getTotalMensal');
     });
 
     Route::group(['prefix' => 'usuario'], function() {

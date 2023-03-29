@@ -34,15 +34,40 @@
                 </b-card>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card card-content">
+                    <h3>Quantidade de apostas por mês</h3>
+                    <Bar
+                        id="my-chart-id"
+                        :options="qtdApostasMensaisOptions"
+                        :data="qtdApostasMensaisData"
+                    />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <b-card bg-variant="warning" text-variant="white" >
+                    <span class="number">28</span><br />
+                    <hr />
+                    <b-icon icon="star"></b-icon>
+                    Dezembro - Mês com mais apostas
+                </b-card>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import {api} from '../../../config';
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 export default {
     components: {
-        
+        Bar
     },
 
     data() {
@@ -55,7 +80,19 @@ export default {
             qtdJogos: 0,
             qtdSorteios: 0,
             qtdApostas: 0,
-            qtdUsuarios: 0
+            qtdUsuarios: 0,
+            qtdApostasMensaisOptions: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            },
+            qtdApostasMensaisData: {
+                labels: [],
+                datasets: [ { data: [] } ]
+            },
         }
     },
 
@@ -66,6 +103,7 @@ export default {
         this.getQuantidadeSorteios();
         this.getQuantidadeApostas();
         this.getQuantidadeUsuarios();
+        this.getQuantidadeApostasMensais();
     },
 
     methods: {
@@ -124,6 +162,52 @@ export default {
                 }
             });
         },
+
+        getQuantidadeApostasMensais() {
+            axios.get(api.apostas_quantidade_mensal, this.header).then(response => {
+                if (response.status == 200) {
+                    let quantidades = response.data.data.apostas;
+                    let qtdApostasMensaisLabels = [];
+                    let qtdApostasMensaisDatasets = [];
+                    
+                    quantidades.map(response => {
+                        qtdApostasMensaisLabels.push(response.data_formatada);
+                        qtdApostasMensaisDatasets.push(response.quantidade);
+                    });
+
+                    this.qtdApostasMensaisData = {
+                        labels: qtdApostasMensaisLabels,
+                        datasets: [ { 
+                            label: false,
+                            data: qtdApostasMensaisDatasets,
+                            backgroundColor: [
+                                'rgba(255, 0, 0, 0.7)',
+                                'rgba(255, 255, 0, 0.7)',
+                                'rgba(75, 0, 130, 0.7)',
+                                'rgba(107, 142, 35, 0.7)',
+                                'rgba(0, 128, 0, 0.7)',
+                                'rgba(70, 130, 180, 0.7)',
+                                'rgba(79, 79, 79, 0.7)',
+                                'rgba(250, 128, 114, 0.7)',
+                                'rgba(255, 105, 180, 0.7)',
+                                'rgba(222, 184, 135, 0.7)',
+                                'rgba(189, 83, 107, 0.7)',
+                                'rgba(60, 179, 113, 0.7)',
+                            ],
+                        } ]
+                    };
+                    this.qtdApostasMensaisOptions = {
+                        responsive: true
+                    };
+                }
+            }).catch(error => {
+                if (error.response.status == 401) {
+                    localStorage.removeItem('token');
+
+                    window.location.href = "/";
+                }
+            });
+        },
     }
 }
 </script>
@@ -139,5 +223,9 @@ export default {
 
 .number {
     font-size: 36px;
+}
+
+.row-chart {
+    max-height: 200px;
 }
 </style>

@@ -41,4 +41,13 @@ class Aposta extends Model
     {
         $this->create($aposta);
     }
+
+    public function getTotalMensal()
+    {
+        return self::select(DB::raw("date_format(data, '%Y-%m') as data_formatada"), DB::raw('count(id) as quantidade'))
+            ->groupBy(DB::raw("date_format(data, '%Y-%m')"))
+            ->orderBy('data_formatada', 'desc')
+            ->limit(12)
+            ->get();
+    }
 }

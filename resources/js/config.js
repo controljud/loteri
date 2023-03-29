@@ -16,6 +16,7 @@ export const api = {
     aposta: '/api/aposta',
     apostas: '/api/aposta/apostas',
     apostas_quantidade: '/api/aposta/quantidade',
+    apostas_quantidade_mensal: '/api/aposta/apostas/mensal/total',
 
-    usuario_quantidade: '/api/usuario/quantidade'
+    usuario_quantidade: '/api/usuario/quantidade',
 }

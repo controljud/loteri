@@ -152,6 +152,35 @@ class ApostaController extends Controller
         }
     }
 
+    public function getTotalMensal()
+    {
+        try {
+            if ($this->isAdminUser()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Quantidade retornada com sucesso",
+                    'data' => [
+                        'apostas' => $this->aposta->getTotalMensal()
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => "Você não tem acesso para usar essa funcionalidade",
+                'data' => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("QUANTIDADE APOSTAS: " . $ex->getMessage());
+            
+            return response()->json([
+                'status' => 1,
+                'message' => "Ocorreu um erro na execução do serviço",
+                'data' => null
+            ], 500);
+        }
+    }
+
     private function mountAposta($dezenas)
     {
         $dezenas = str_replace('.', '-', str_replace(',', '-', str_replace(' ', '-', $dezenas)));
