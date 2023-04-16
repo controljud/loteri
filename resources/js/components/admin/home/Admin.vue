@@ -47,12 +47,35 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <b-card bg-variant="warning" text-variant="white" >
-                    <span class="number">28</span><br />
-                    <hr />
-                    <b-icon icon="star"></b-icon>
-                    Dezembro - Mês com mais apostas
-                </b-card>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-content">
+                            Média de apostas por mês
+                            <hr />
+                            <span class="card-info">15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-content">
+                            Mês com a maior média de apostas
+                            <hr />
+                            <span class="card-info">Agosto: 17</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-content">
+                            Mês com o maior número de apostas
+                            <hr />
+                            <span class="card-info">Agosto/2022: 33</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -227,5 +250,9 @@ export default {
 
 .row-chart {
     max-height: 200px;
+}
+
+.card-info {
+    font-size: 25px;
 }
 </style>
