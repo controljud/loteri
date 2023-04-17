@@ -186,9 +186,13 @@ class JogoController extends Controller
         try {
             $dezenas = $this->mountDezenas($request->dezenas);
 
-            $sorteio = new Sorteios;
-            $sorteio->id_jogo = $request->id_jogo;
-            $sorteio->numero = $request->numero;
+            if (!$sorteio = Sorteios::where('numero', $request->numero)->where('id_jogo', $request->id_jogo)->first()) {
+                $sorteio = new Sorteios;
+                
+                $sorteio->id_jogo = $request->id_jogo;
+                $sorteio->numero = $request->numero;
+            }
+
             $sorteio->dezenas = $dezenas;
             $sorteio->data = $request->data;
             $sorteio->premio = $request->premio;

@@ -193,6 +193,7 @@ export default ({
 
         edit(item) {
             this.$bvModal.show('novoSorteioModal');
+            this.$refs.novoSorteioModal.preencheCampos(item);
         },
 
         doConfirm(item) {
