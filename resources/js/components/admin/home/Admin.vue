@@ -52,7 +52,7 @@
                         <div class="card card-content">
                             Média de apostas por mês
                             <hr />
-                            <span class="card-info">15</span>
+                            <span class="card-info">{{apostasFormatadas.media_mensal}}</span>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                         <div class="card card-content">
                             Mês com a maior média de apostas
                             <hr />
-                            <span class="card-info">Agosto: 17</span>
+                            <span class="card-info">{{apostasFormatadas.mes_maior_media}}</span>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                         <div class="card card-content">
                             Mês com o maior número de apostas
                             <hr />
-                            <span class="card-info">Agosto/2022: 33</span>
+                            <span class="card-info">{{apostasFormatadas.mes_maior_quantidade}}</span>
                         </div>
                     </div>
                 </div>
@@ -116,6 +116,11 @@ export default {
                 labels: [],
                 datasets: [ { data: [] } ]
             },
+            apostasFormatadas: {
+                media_mensal: 0,
+                mes_maior_quantidade: '',
+                mes_maior_media: ''
+            }
         }
     },
 
@@ -127,6 +132,7 @@ export default {
         this.getQuantidadeApostas();
         this.getQuantidadeUsuarios();
         this.getQuantidadeApostasMensais();
+        this.getApostasFormatadas();
     },
 
     methods: {
@@ -222,6 +228,22 @@ export default {
                     this.qtdApostasMensaisOptions = {
                         responsive: true
                     };
+                }
+            }).catch(error => {
+                if (error.response.status == 401) {
+                    localStorage.removeItem('token');
+
+                    window.location.href = "/";
+                }
+            });
+        },
+
+        getApostasFormatadas() {
+            axios.get(api.apostas_formatadas, this.header).then(response => {
+                if (response.status == 200) {
+                    this.apostasFormatadas = response.data.data.apostas;
+
+                    console.log(this.apostasFormatadas);
                 }
             }).catch(error => {
                 if (error.response.status == 401) {

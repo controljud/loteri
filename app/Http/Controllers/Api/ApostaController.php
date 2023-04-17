@@ -50,7 +50,7 @@ class ApostaController extends Controller
                 "data" => null
             ]);
         } catch (Exception $ex) {
-            Log::error("Erro na gravação da aposta: " . $ex->getMessage());
+            Log::error("Erro na gravação da aposta: " . $ex->getFile() . ': Linha (' . $ex->getLine() . ') - ' . $ex->getMessage());
 
             return response()->json([
                 "status" => 1,
@@ -81,7 +81,7 @@ class ApostaController extends Controller
                 "data" => null
             ], 400);
         } catch (Exception $ex) {
-            Log::error("Erro no retorno das apostas: " . $ex->getMessage());
+            Log::error("Erro no retorno das apostas: " . $ex->getFile() . ': Linha (' . $ex->getLine() . ') - ' . $ex->getMessage());
 
             return response()->json([
                 "status" => 1,
@@ -111,7 +111,7 @@ class ApostaController extends Controller
                 "data" => null
             ], 400);
         } catch (Exception $ex) {
-            Log::error("Erro ao excluir aposta: " . $ex->getMessage());
+            Log::error("Erro ao excluir aposta: " . $ex->getFile() . ': Linha (' . $ex->getLine() . ') - ' . $ex->getMessage());
 
             return response()->json([
                 "status" => 0,
@@ -142,7 +142,7 @@ class ApostaController extends Controller
                 'data' => null
             ], 400);
         } catch (Exception $ex) {
-            Log::error("QUANTIDADE APOSTAS: " . $ex->getMessage());
+            Log::error("QUANTIDADE APOSTAS: " . $ex->getFile() . ': Linha (' . $ex->getLine() . ') - ' . $ex->getMessage());
             
             return response()->json([
                 'status' => 1,
@@ -171,7 +171,94 @@ class ApostaController extends Controller
                 'data' => null
             ], 400);
         } catch (Exception $ex) {
-            Log::error("QUANTIDADE APOSTAS: " . $ex->getMessage());
+            Log::error("QUANTIDADE APOSTAS: " . $ex->getFile() . ': Linha (' . $ex->getLine() . ') - ' . $ex->getMessage());
+            
+            return response()->json([
+                'status' => 1,
+                'message' => "Ocorreu um erro na execução do serviço",
+                'data' => null
+            ], 500);
+        }
+    }
+
+    public function getTotaisFormatados()
+    {
+        try {
+            if ($this->isAdminUser()) {
+                $meses = [
+                    '',
+                    'Janeiro',
+                    'Fevereiro',
+                    'Março',
+                    'Abril',
+                    'Maio',
+                    'Junho',
+                    'Julho',
+                    'Agosto',
+                    'Setembro',
+                    'Outubro',
+                    'Novembro',
+                    'Dezembro',
+                ];
+                $apostas = $this->aposta->getTotalMensalGeral();
+
+                $soma = 0;
+                $quantidadeMeses = 0;
+                $maior = 0;
+                $maiorMes = '';
+                $mesQuantidade = [];
+
+                foreach ($apostas as $aposta) {
+                    $soma += $aposta->quantidade;
+                    $quantidadeMeses ++;
+
+                    if ($maior < $aposta->quantidade) {
+                        $maior = $aposta->quantidade;
+                        $maiorMes = $meses[$aposta->mes_unitario] . '/' . $aposta->ano_unitario . ': ' . $maior;
+                    }
+
+                    if (!isset($mesQuantidade[$aposta->mes_unitario])) {
+                        $mesQuantidade[$aposta->mes_unitario] = ['indice' => 1, 'quantidade' => $aposta->quantidade];
+                    } else {
+                        $mesQuantidade[$aposta->mes_unitario]['indice'] ++;
+                        $mesQuantidade[$aposta->mes_unitario]['quantidade'] += $aposta->quantidade;
+                    }
+                }
+
+                $mesMaiorMedia = '';
+                $maiorMedia = 0;
+                foreach ($mesQuantidade as $key => $mesQ) {
+                    if ($mesQ != '') {
+                        if ($maiorMedia < ($mesQ['quantidade'] / $mesQ['indice'])) {
+                            $maiorMedia = ($mesQ['quantidade'] / $mesQ['indice']);
+
+                            $mesMaiorMedia = $meses[$key] . ': ' . round($maiorMedia, 2);
+                        }
+                    }
+                }
+
+                $mediaMensal = round($soma / $quantidadeMeses, 2);
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Quantidade retornada com sucesso",
+                    'data' => [
+                        'apostas' => [
+                            'media_mensal' => $mediaMensal,
+                            'mes_maior_quantidade' => $maiorMes,
+                            'mes_maior_media' => $mesMaiorMedia
+                        ]
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => "Você não tem acesso para usar essa funcionalidade",
+                'data' => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("APOSTAS FORMATADAS: " . $ex->getFile() . ': Linha (' . $ex->getLine() . ') - ' . $ex->getFile() . ': Linha (' . $ex->getLine() . ') - ' . $ex->getMessage());
             
             return response()->json([
                 'status' => 1,

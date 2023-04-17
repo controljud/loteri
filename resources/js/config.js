@@ -17,6 +17,11 @@ export const api = {
     apostas: '/api/aposta/apostas',
     apostas_quantidade: '/api/aposta/quantidade',
     apostas_quantidade_mensal: '/api/aposta/apostas/mensal/total',
+    apostas_formatadas: '/api/aposta/apostas/formatadas/totais',
 
     usuario_quantidade: '/api/usuario/quantidade',
+
+    jogos: '/api/jogo/jogos',
+
+    usuarios: '/api/usuario/usuarios'
 }

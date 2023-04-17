@@ -47,11 +47,11 @@
                 ref="novoSorteioModal"
             ></NovoSorteioModal>
 
-            <ConfirmModal
+            <!-- <ConfirmModal
                 :texto="texto"
                 v-on:delete="doDelete"
                 ref="confirmaModal"
-            ></ConfirmModal>
+            ></ConfirmModal> -->
         </div>
     </div>
 </template>
@@ -117,8 +117,8 @@ export default ({
                 if (response.data.data != null) {
                     let retorno = response.data.data;
 
-                    this.currentPage = retorno.current_page;
-                    this.last_page = retorno.last_page;
+                    this.currentPage = retorno.current_page ? retorno.current_page : 1;
+                    this.last_page = retorno.last_page ? retorno.last_page : 1;
 
                     let dados = retorno.data;
                     dados.map(function(sorteio) {

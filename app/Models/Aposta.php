@@ -53,8 +53,8 @@ class Aposta extends Model
 
     public function getTotalMensalGeral()
     {
-        return self::select(DB::raw("date_format(data, '%Y-%m') as data_formatada"), DB::raw('count(id) as quantidade'))
-            ->groupBy(DB::raw("date_format(data, '%Y-%m')"))
+        return self::select(DB::raw("date_format(created_at, '%Y') as ano_unitario"), DB::raw("date_format(created_at, '%c') as mes_unitario"), DB::raw('count(id) as quantidade'))
+            ->groupBy(DB::raw("date_format(created_at, '%Y')"), DB::raw("date_format(created_at, '%c')"))
             ->get();
     }
 }

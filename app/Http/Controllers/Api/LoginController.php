@@ -94,6 +94,11 @@ class LoginController extends Controller
         }
     }
 
+    public function getUsuarios($page = 1)
+    {
+        return User::select('id', 'name', 'email', 'status')->paginate();
+    }
+
     private function isAdminUser()
     {
         return User::where('users.id', Auth::id())->join('lt_admin_users', 'users.id', 'lt_admin_users.id_user')->exists();

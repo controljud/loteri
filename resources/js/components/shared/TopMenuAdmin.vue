@@ -21,16 +21,16 @@
                 </router-link>
             </li>
             <li>
-                <a href="#" class="nav-link link-dark">
+                <router-link :to="{name: 'admin.jogos'}" class="nav-link link-dark" exact>
                     <b-icon icon="bank"></b-icon>
                     Jogos
-                </a>
+                </router-link>
             </li>
             <li>
-                <a href="#" class="nav-link link-dark">
+                <router-link :to="{name: 'admin.usuarios'}" class="nav-link link-dark" exact>
                     <b-icon icon="person-circle"></b-icon>
                     Usuários
-                </a>
+                </router-link>
             </li>
         </ul>
 
@@ -38,15 +38,13 @@
 
         <div class="dropdown">
             <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-                <strong>mdo</strong>
+                <img src="/images/user-admin.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                <strong>{{usuario.name}}</strong>
             </a>
             <ul class="dropdown-menu text-small shadow">
-                <li><a class="dropdown-item" href="#">New project...</a></li>
-                <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)">Perfil</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)">Sair</a></li>
             </ul>
         </div>
     </div>
@@ -60,12 +58,12 @@ export default {
 
     data() {
         return {
-            
+            usuario: null
         }
     },
 
     created: function() {
-
+        this.usuario = JSON.parse(localStorage.getItem('user'));
     },
 
     methods: {
