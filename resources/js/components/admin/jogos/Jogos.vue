@@ -9,6 +9,18 @@
             </div>
 
             <div class="row">
+                <div class="col-md-6">
+                    
+                </div>
+
+                <div class="col-md-6 right">
+                    <b-button size="sm" variant="success" @click="zeraCampos(); $bvModal.show('novoJogoModal');">
+                        <font-awesome-icon icon="fa-solid fa-plus" />
+                    </b-button>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-md-12">
                     <Tabela
                         :idTabela="idTabela"
@@ -28,6 +40,12 @@
                 v-on:atualizarTabela="atualizarTabela"
                 ref="novoJogoModal"
             ></NovoJogoModal>
+
+            <ConfirmModal
+                :texto="texto"
+                v-on:doDelete="doDelete"
+                ref="confirmModal"
+            ></ConfirmModal>
         </div>
     </div>
 </template>
@@ -37,11 +55,13 @@ import { throwStatement } from '@babel/types';
 import {api} from '../../../config';
 import Tabela from '../../shared/Tabela.vue';
 import NovoJogoModal from './NovoJogoModal.vue';
+import ConfirmModal from '../../shared/ConfirmModal.vue';
 
 export default ({
     components: {
         Tabela,
-        NovoJogoModal
+        NovoJogoModal,
+        ConfirmModal
     },
 
     data() {
@@ -55,7 +75,10 @@ export default ({
             items: null,
             item: null,
             fields: [
+                { key: 'imagem', label: '', class: 'text-center' },
                 { key: 'jogo', label: 'Jogo'},
+                { key: 'quantidade_dezenas', label: 'Quantidade de Dezenas', class: 'text-center' },
+                { key: 'quantidade_acertos', label: 'Quantidade de Acertos', class: 'text-center' },
                 { key: 'status', label: 'Status', class: 'text-center' },
                 { key: 'actions', label: 'Ações', class: 'text-center' }
             ],
@@ -67,7 +90,8 @@ export default ({
                 { value: null, text: '--- Selecione um jogo ---' },
                 { value: 1, text: 'Mega Sena' },
             ],
-            isLoading: false
+            isLoading: false,
+            texto: ''
         }
     },
 
@@ -155,25 +179,30 @@ export default ({
         },
 
         edit(item) {
-            this.$bvModal.show('novoSorteioModal');
+            this.$bvModal.show('novoJogoModal');
+            this.$refs.novoJogoModal.preencheCampos(item);
+        },
+
+        zeraCampos() {
+            this.$refs.novoJogoModal.zeraCampos();
         },
 
         doConfirm(item) {
-            this.$refs.confirmaModal.preencheItem(item);
+            this.$refs.confirmModal.preencheItem(item);
             this.$bvModal.show('confirmaModal');
         },
 
         doDelete(item) {
             if (item != null) {
-                this.deleteSorteio(item);
+                this.deleteJogo(item);
             } else {
-                this.$toast.warning("Não há sorteio selecionado");
+                this.$toast.warning("Não há jogo selecionado");
             }
         },
 
-        deleteSorteio(item) {
-            let url = api.sorteio + '/' + item.id;
-				
+        deleteJogo(item) {
+            let url = api.jogo + '/' + item.id;
+
             axios.delete(url, this.header).then(response => {
                 this.$toast.success(response.data.message);
                 this.getData(this.currentPage);

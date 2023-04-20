@@ -96,7 +96,7 @@ class LoginController extends Controller
 
     public function getUsuarios($page = 1)
     {
-        return User::select('id', 'name', 'email', 'status')->paginate();
+        return User::select('id', 'name', 'email', 'status', 'imagem')->paginate();
     }
 
     private function isAdminUser()

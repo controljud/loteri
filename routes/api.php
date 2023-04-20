@@ -25,6 +25,7 @@ Route::post('/cadastro', 'App\Http\Controllers\Api\LoginController@cadastro');
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::group(['prefix' => 'jogo'], function() {
         Route::post('/', 'App\Http\Controllers\Api\JogoController@postJogo');
+        Route::delete('/{id}', 'App\Http\Controllers\Api\JogoController@deleteJogo');
         Route::get('/jogos', 'App\Http\Controllers\Api\JogoController@getJogos');
         Route::get('/quantidade', 'App\Http\Controllers\Api\JogoController@getQuantidadeJogos');
         Route::get('/ultimo/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getUltimoJogo');
@@ -34,7 +35,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
         Route::get('/sorteio/atual', 'App\Http\Controllers\Api\JogoController@getSorteioAtual');
         Route::get('/sorteio/quantidade', 'App\Http\Controllers\Api\JogoController@getQuantidadeSorteios');
         Route::post('/sorteio', 'App\Http\Controllers\Api\JogoController@postSorteio');
-        Route::delete('/sorteio/{id}', 'App\Http\Controllers\Api\JogoController@deleteSorteio');
+        Route::delete('/sorteio/{id_jogo}/{numero}', 'App\Http\Controllers\Api\JogoController@deleteSorteio');
 
         Route::put('/totais', 'App\Http\Controllers\Api\JogoController@putTotais');
         Route::get('/totais/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getTotais');

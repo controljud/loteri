@@ -47,11 +47,11 @@
                 ref="novoSorteioModal"
             ></NovoSorteioModal>
 
-            <!-- <ConfirmModal
+            <ConfirmModal
                 :texto="texto"
-                v-on:delete="doDelete"
-                ref="confirmaModal"
-            ></ConfirmModal> -->
+                v-on:doDelete="doDelete"
+                ref="confirmModal"
+            ></ConfirmModal>
         </div>
     </div>
 </template>
@@ -91,17 +91,16 @@ export default ({
             currentPage: 1,
             isBusy: false,
             jogo: 1,
-            jogos: [
-                { value: null, text: '--- Selecione um jogo ---' },
-                { value: 1, text: 'Mega Sena' },
-            ],
-            isLoading: false
+            jogos: null,
+            isLoading: false,
+            texto: ''
         }
     },
 
     created: function() {
         this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
 
+        this.getJogos();
         this.getData(this.currentPage);
     },
 
@@ -197,7 +196,7 @@ export default ({
         },
 
         doConfirm(item) {
-            this.$refs.confirmaModal.preencheItem(item);
+            this.$refs.confirmModal.preencheItem(item);
             this.$bvModal.show('confirmaModal');
         },
 
@@ -210,7 +209,7 @@ export default ({
         },
 
         deleteSorteio(item) {
-            let url = api.sorteio + '/' + item.id;
+            let url = api.sorteio + '/' + this.jogo + '/' + item.numero;
 				
             axios.delete(url, this.header).then(response => {
                 this.$toast.success(response.data.message);
@@ -227,6 +226,29 @@ export default ({
         atualizarTabela() {
             this.$bvModal.hide('novoSorteioModal');
             this.getData(this.currentPage);
+        },
+
+        getJogos() {
+            let url = api.jogos;
+            axios.get(url, this.header).then(response => {
+                if (response.data.status == 0) {
+                    let jogos = response.data.data;
+
+                    this.jogos = [
+                        { value: null, text: '--- Selecione um jogo ---' }
+                    ];
+
+                    jogos.map(jogo => {
+                        this.jogos.push({ value: jogo.id, text: jogo.jogo });
+                    });
+                }
+            }).catch(error => {
+                if (error.response.status == 400) {
+                    this.$toast.warning(error.response.data.message);
+                } else {
+                    this.$toast.error(error.response.data.message);
+                }
+            })
         }
     }
 })

@@ -19,7 +19,7 @@
 
                 <div class="row">
                     <div class="col-md-12 right">
-                        <b-button type="button" variant="success" block @click="excluir(); $bvModal.hide('confirmaModal');">
+                        <b-button type="button" variant="success" block @click="confirmar(); $bvModal.hide('confirmaModal');">
                             <font-awesome-icon icon="fa-solid fa-trash" />
                         </b-button>
 

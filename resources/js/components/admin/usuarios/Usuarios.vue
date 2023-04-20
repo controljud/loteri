@@ -3,8 +3,8 @@
         <div class="card card-content">
             <div class="row">
                 <div class="col-md-12">
-                    <h3>Jogos</h3>
-                    <p>Aqui estão os jogos disponívei</p>
+                    <h3>Usuários</h3>
+                    <p>Abaixo os usuários cadastrados no Lotery Map</p>
                 </div>
             </div>
 
@@ -19,6 +19,7 @@
                         v-on:linkGen="linkGen"
                         v-on:edit="edit"
                         v-on:doConfirm="doConfirm"
+                        :tipo="tipo"
                     ></Tabela>
                 </div>
             </div>
@@ -57,7 +58,7 @@ export default ({
             items: null,
             item: null,
             fields: [
-                { key: 'id', label: 'ID', class: 'text-center' },
+                { key: 'imagem', label: '', class: 'text-center' },
                 { key: 'name', label: 'Nome' },
                 { key: 'email', label: 'E-mail' },
                 { key: 'status', label: 'Status', class: 'text-center' },
@@ -71,7 +72,8 @@ export default ({
                 { value: null, text: '--- Selecione um jogo ---' },
                 { value: 1, text: 'Mega Sena' },
             ],
-            isLoading: false
+            isLoading: false,
+            tipo: 'usuario'
         }
     },
 

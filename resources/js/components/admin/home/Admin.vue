@@ -6,7 +6,7 @@
                     <span class="number">{{ qtdJogos }}</span><br />
                     <hr />
                     <b-icon icon="caret-right-fill"></b-icon>
-                    Jogo
+                    Jogos
                 </b-card>
             </div>
             <div class="col-md-3">
@@ -242,8 +242,6 @@ export default {
             axios.get(api.apostas_formatadas, this.header).then(response => {
                 if (response.status == 200) {
                     this.apostasFormatadas = response.data.data.apostas;
-
-                    console.log(this.apostasFormatadas);
                 }
             }).catch(error => {
                 if (error.response.status == 401) {

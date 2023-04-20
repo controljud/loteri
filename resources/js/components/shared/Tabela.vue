@@ -21,6 +21,12 @@
                         <b-form-rating v-if="item.value > 5" id="rating-6" v-model="item.value" stars="6" variant="success" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>
                     </template>
 
+                    <template #cell(imagem)="item">
+                        <img v-if="item.value == '' && tipo == 'usuario'" src="/images/user-admin.png" style="width: 25px" />
+                        <img v-if="item.value == '' && tipo != 'usuario'" src="/images/trevo.png" style="width: 25px" />
+                        <img v-if="item.value != ''" v-bind:src="item.value" style="width: 25px" />
+                    </template>
+
                     <template #cell(actions)="row">
                         <b-button-group>
                             <b-button size="sm" class="btn btn-sm btn-primary" @click="edit(row.item)">
@@ -66,12 +72,13 @@ export default ({
     },
 
     props: [
-        'idTabela', 'items', 'fields', 'last_page', 'isBusy'
+        'idTabela', 'items', 'fields', 'last_page', 'isBusy', 'tipo'
     ],
 
     data() {
         return {
-
+            img_padrao: '/images/trevo.png',
+            img_usuario: '/images/user-admin.png'
         }
     },
 

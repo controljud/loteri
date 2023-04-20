@@ -31,8 +31,15 @@ class JogoController extends Controller
     {
         try {
             if ($this->isAdminUser()) {
-                $jogo = new Jogos;
+                if ($request->id) {
+                    $jogo = Jogos::where('id', $request->id)->first();
+                } else {
+                    $jogo = new Jogos;
+                }
+
                 $jogo->jogo = $request->jogo;
+                $jogo->quantidade_dezenas = $request->quantidade_dezenas;
+                $jogo->quantidade_acertos = $request->quantidade_acertos;
                 $jogo->status = $request->status;
 
                 $jogo->save();
@@ -60,6 +67,53 @@ class JogoController extends Controller
         }
     }
 
+    public function deleteJogo($id)
+    {
+        try {
+            if ($this->isAdminUser()) {
+                if ($jogo = Jogos::where('id', $id)->first()) {
+                    $sorteios = Sorteios::where('id_jogo', $id)->get();
+
+                    if (count($sorteios) == 0) {
+                        $jogo->delete();
+
+                        return response()->json([
+                            "status" => 0,
+                            "message" => "Jogo excluído com sucesso",
+                            "data" => null
+                        ]);
+                    }
+
+                    return response()->json([
+                        "status" => 1,
+                        "message" => "Este jogo possui sorteios realizados. Favor excluir estes sorteios antes de excluir o jogo",
+                        "data" => null
+                    ], 400);
+                }
+
+                return response()->json([
+                    "status" => 1,
+                    "message" => "Jogo não encontrado",
+                    "data" => null
+                ], 400);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro retorno dos dados: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro no retorno dos dados",
+                "data" => null
+            ], 500);
+        }
+    }
+
     public function getJogos()
     {
         try {
@@ -68,7 +122,7 @@ class JogoController extends Controller
 
                 return response()->json([
                     "status" => 0,
-                    "message" => "Jogo criado com sucesso",
+                    "message" => "Jogos retornados com sucesso",
                     "data" => $jogos
                 ]);
             }
@@ -482,31 +536,38 @@ class JogoController extends Controller
         }
     }
 
-    public function deleteSorteio(Request $request, $id)
+    public function deleteSorteio(Request $request, $id_jogo, $numero)
     {
         try {
-            $sorteio = Sorteios::find($id);
-            if ($id != null && $sorteio = Sorteios::where('id', $id)->first()) {
-                $sorteio->delete();
+            if ($this->isAdminUser()) {
+                if ($sorteio = Sorteios::where('id_jogo', $id_jogo)->where('numero', $numero)->first()) {
+                    $sorteio->delete();
+
+                    return response()->json([
+                        "status" => 1,
+                        "message" => "Sorteio excluído com sucesso",
+                        "data" => null
+                    ]);
+                }
 
                 return response()->json([
-                    "status" => 1,
-                    "message" => "Aposta excluída com sucesso",
+                    "status" => 0,
+                    "message" => "Sorteio não encontrado",
                     "data" => null
-                ]);
+                ], 400);
             }
 
             return response()->json([
-                "status" => 0,
-                "message" => "Aposta não encontrada",
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
                 "data" => null
             ], 400);
         } catch (Exception $ex) {
-            Log::error("Erro ao excluir aposta: " . $ex->getMessage());
+            Log::error("Erro ao excluir sorteio: " . $ex->getMessage());
 
             return response()->json([
                 "status" => 0,
-                "message" => "Erro ao excluir aposta",
+                "message" => "Erro ao excluir sorteio",
                 "data" => null
             ], 500);
         }
