@@ -60,12 +60,12 @@ class ApostaController extends Controller
         }
     }
 
-    public function getApostas(Request $request, $filter)
+    public function getApostas(Request $request, $id_jogo, $filter)
     {
         try {
             $id_user = Auth::id();
 
-            $apostas = $this->aposta->getApostas($id_user, $filter);
+            $apostas = $this->aposta->getApostas($id_user, $id_jogo, $filter);
 
             if (count($apostas) > 0) {
                 return response()->json([

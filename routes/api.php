@@ -46,10 +46,10 @@ Route::group(['middleware' => ['jwt.auth']], function () {
         Route::get('/quantidade', 'App\Http\Controllers\Api\ApostaController@getQuantidadeApostas');
         Route::delete('/{id}', 'App\Http\Controllers\Api\ApostaController@deleteAposta');
 
-        Route::get('/apostas/{filter}', 'App\Http\Controllers\Api\ApostaController@getApostas');
+        Route::get('/apostas/{id_jogo}/{filter}', 'App\Http\Controllers\Api\ApostaController@getApostas');
 
-        Route::get('/apostas/mensal/total', 'App\Http\Controllers\Api\ApostaController@getTotalMensal');
-        Route::get('/apostas/formatadas/totais', 'App\Http\Controllers\Api\ApostaController@getTotaisFormatados');
+        Route::get('/apostas/admin/mensal/total', 'App\Http\Controllers\Api\ApostaController@getTotalMensal');
+        Route::get('/apostas/admin/formatadas/totais', 'App\Http\Controllers\Api\ApostaController@getTotaisFormatados');
     });
 
     Route::group(['prefix' => 'usuario'], function() {

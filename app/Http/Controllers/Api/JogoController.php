@@ -287,21 +287,13 @@ class JogoController extends Controller
     public function getTotais(Request $request, $id_jogo)
     {
         try {
-            if ($this->isAdminUser()) {
-                $totais = Totais::where('id_jogo', $id_jogo)->get();
-
-                return response()->json([
-                    "status" => 0,
-                    "message" => "",
-                    "data" => $totais
-                ]);
-            }
+            $totais = Totais::where('id_jogo', $id_jogo)->get();
 
             return response()->json([
-                "status" => 1,
-                "message" => "Usuário sem acesso a essa funcionalidade",
-                "data" => null
-            ], 400);
+                "status" => 0,
+                "message" => "",
+                "data" => $totais
+            ]);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
 

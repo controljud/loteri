@@ -248,7 +248,7 @@ export default ({
                 } else {
                     this.$toast.error(error.response.data.message);
                 }
-            })
+            });
         }
     }
 })

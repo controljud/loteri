@@ -9,12 +9,16 @@
 			</div>
 
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-4">
+					<b-form-select v-model="jogo" :options="jogos" size="sm" class="form-control" v-on:change="getData(1)"></b-form-select>
+				</div>
+
+				<div class="col-md-4">
 					<b-form-group >
 						<b-form-input type="text" autocomplete="off" placeholder="Busque seus jogos" v-model="filter" v-on:keyup="filtrar"></b-form-input>
 					</b-form-group>
 				</div>
-				<div class="col-md-6 right">
+				<div class="col-md-4 right">
 					<b-button size="sm" class="btn-success" @click="$bvModal.show('novaApostaModal'); zeraCamposModal()">
 						<font-awesome-icon icon="fa-solid fa-plus" />
 					</b-button>
@@ -120,6 +124,9 @@
 				perPage: 10,
 				last_page: 1,
 
+				jogos: null,
+				jogo: 1,
+
 				isBusy: false
             }
         },
@@ -127,6 +134,7 @@
 		created: function() {
 			this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
 
+			this.getJogos();
 			this.getData(this.currentPage);
 		},
 
@@ -137,7 +145,7 @@
 				let filtro = this.filter == null || this.filter == '' ? 0 : this.filter;
 				let url = '';
 
-				url = api.apostas + '/' + filtro + '?page=' + page;
+				url = api.apostas + '/' + this.jogo + '/' + filtro + '?page=' + page;
 
 				axios.get(url, this.header).then(response => {
 					let rows = [];
@@ -147,7 +155,7 @@
 					this.rows = 1;
 					this.baseUrl = null;
 					this.last_page = 1;
-
+ 
 					if (response.data.data != null) {
 						let retorno = response.data.data;
 
@@ -236,6 +244,29 @@
 
 			zeraCamposModal() {
 				this.$refs.novaApostaModal.zeraCampos();
+			},
+
+			getJogos() {
+				let url = api.jogos;
+				axios.get(url, this.header).then(response => {
+					if (response.data.status == 0) {
+						let jogos = response.data.data;
+
+						this.jogos = [
+							{ value: null, text: '--- Selecione um jogo ---' }
+						];
+
+						jogos.map(jogo => {
+							this.jogos.push({ value: jogo.id, text: jogo.jogo });
+						});
+					}
+				}).catch(error => {
+					if (error.response.status == 400) {
+						this.$toast.warning(error.response.data.message);
+					} else {
+						this.$toast.error(error.response.data.message);
+					}
+				});
 			}
 		}
 	}
