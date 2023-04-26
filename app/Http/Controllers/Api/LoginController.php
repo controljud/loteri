@@ -50,16 +50,16 @@ class LoginController extends Controller
         User::create(array(
             'name' => $request->name,
             'password' => Hash::make($request->password),
-            'email'    => $request->email
+            'email' => $request->email,
+            'status' => 1
         ));
 
         $retorno = [
             "status" => 0,
             "mensagem" => "Retorno Cadastro OK",
-            "data" => [
-                
-            ]
+            "data" => null
         ];
+        
         return response()->json($retorno);
     }
 
