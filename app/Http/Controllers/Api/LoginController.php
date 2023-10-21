@@ -94,9 +94,31 @@ class LoginController extends Controller
         }
     }
 
-    public function getUsuarios($page = 1)
+    public function getUsuarios($per_page = 10)
     {
-        return User::select('id', 'name', 'email', 'status', 'imagem')->paginate();
+        try {
+            if ($this->isAdminUser()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => '',
+                    'data' => User::select('id', 'name', 'email', 'status', 'imagem')->paginate($per_page)
+                ]);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro retorno dos dados: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro no retorno dos dados",
+                "data" => null
+            ], 500);
+        }
     }
 
     private function isAdminUser()

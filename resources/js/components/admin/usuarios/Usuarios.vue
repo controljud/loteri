@@ -9,6 +9,16 @@
             </div>
 
             <div class="row">
+                <div class="col-md-6"></div>
+
+                <div class="col-md-6 right">
+                    <b-button size="sm" variant="success" @click="$bvModal.show('novoUsuarioModal');">
+                        <font-awesome-icon icon="fa-solid fa-plus" />
+                    </b-button>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-md-12">
                     <Tabela
                         :idTabela="idTabela"
@@ -91,14 +101,13 @@ export default ({
 
             axios.get(url, this.header).then(response => {
                 let rows = [];
+                let retorno = response.data.data;
 
-                if (response.data.data != null) {
-                    let retorno = response.data.data;
-
+                if (response.data.status == 0) {
                     this.currentPage = retorno.current_page ? retorno.current_page : 1;
                     this.last_page = retorno.last_page ? retorno.last_page : 1;
 
-                    this.items = retorno;
+                    this.items = retorno.data;
                 }
 
                 this.isBusy = false;

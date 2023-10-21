@@ -109,14 +109,13 @@ export default ({
 
             axios.get(url, this.header).then(response => {
                 let rows = [];
+                let retorno = response.data.data;
 
-                if (response.data.data != null) {
-                    let retorno = response.data.data;
-
+                if (response.data.status == 0) {
                     this.currentPage = retorno.current_page ? retorno.current_page : 1;
                     this.last_page = retorno.last_page ? retorno.last_page : 1;
 
-                    this.items = retorno;
+                    this.items = retorno.data;
                 }
 
                 this.isBusy = false;

@@ -31,11 +31,13 @@ class ApostaController extends Controller
 
             $id = $request->id;
             if ($id != null) {
-                $aposta = Aposta::find($id);
+                $aposta = Aposta::where('id', $id)->first();
             } else {
                 $aposta = new Aposta;
             }
+            return response()->json($aposta);
 
+            $aposta->id_jogo = $request->id_jogo;
             $aposta->id_user = $request->id_user;
             $aposta->numero = $request->numero;
             $aposta->data = $request->data;

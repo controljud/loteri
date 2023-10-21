@@ -27,6 +27,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
         Route::post('/', 'App\Http\Controllers\Api\JogoController@postJogo');
         Route::delete('/{id}', 'App\Http\Controllers\Api\JogoController@deleteJogo');
         Route::get('/jogos', 'App\Http\Controllers\Api\JogoController@getJogos');
+        Route::get('/jogos/combo', 'App\Http\Controllers\Api\JogoController@getJogosCombo');
         Route::get('/quantidade', 'App\Http\Controllers\Api\JogoController@getQuantidadeJogos');
         Route::get('/ultimo/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getUltimoJogo');
 

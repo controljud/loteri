@@ -95,6 +95,7 @@
                 tamanho: 60,
                 form: {
                     id: null,
+                    id_jogo: null,
                     numero: null,
                     data: null,
                     descricao: '',
@@ -141,17 +142,18 @@
                     this.form.descricao = this.form.descricao != '' ? this.form.descricao : null;
 
                     axios.post(api.aposta, this.form, this.header).then(response => {
-                        if (response.data.status == 0) {
-                            this.$toast.success(response.data.message);
+                        console.log(response);
+                        // if (response.data.status == 0) {
+                        //     this.$toast.success(response.data.message);
 
-                            this.form.descricao = '';
-                            this.form.dezenas = null;
-                            this.zeraCampos();
+                        //     this.form.descricao = '';
+                        //     this.form.dezenas = null;
+                        //     this.zeraCampos();
 
-                            this.$emit('atualizarTabela');
-                        } else {
-                            this.$toast.warning(response.data.mensage);
-                        }
+                        //     this.$emit('atualizarTabela');
+                        // } else {
+                        //     this.$toast.warning(response.data.mensage);
+                        // }
                     }).catch(error => {
                         console.log(error.response.data.message);
                         if (error.response.status == 400) {
@@ -179,21 +181,25 @@
                 this.dezenas = [];
             },
             
-            preencheCampos(item) {
-                this.form.id = item.id;
-                this.form.descricao = item.descricao != null ? item.descricao : '';
-                this.form.numero = item.numero;
+            preencheCampos(item, id_jogo) {
+                this.form.id_jogo = id_jogo;
 
-                let dt = item.data_aposta.split('/');
-                this.form.data = dt[2] + '-' + dt[1] + '-' + dt[0];
-                
-                this.dezenas = [];
-                let dezenas = item.apostado.split('-');
-                for (let i = 0; i < dezenas.length; i++) {
-                    this.dezenas.push(dezenas[i] * 1);
+                if (item) {
+                    this.form.id = item.id;
+                    this.form.descricao = item.descricao != null ? item.descricao : '';
+                    this.form.numero = item.numero;
+
+                    let dt = item.data_aposta.split('/');
+                    this.form.data = dt[2] + '-' + dt[1] + '-' + dt[0];
+                    
+                    this.dezenas = [];
+                    let dezenas = item.apostado.split('-');
+                    for (let i = 0; i < dezenas.length; i++) {
+                        this.dezenas.push(dezenas[i] * 1);
+                    }
+
+                    this.selectDezenas();
                 }
-
-                this.selectDezenas();
             },
 
             zeraCampos() {

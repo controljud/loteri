@@ -19,7 +19,7 @@
 					</b-form-group>
 				</div>
 				<div class="col-md-4 right">
-					<b-button size="sm" class="btn-success" @click="$bvModal.show('novaApostaModal'); zeraCamposModal()">
+					<b-button size="sm" class="btn-success" @click="edit(null, jogo); $bvModal.show('novaApostaModal'); zeraCamposModal()">
 						<font-awesome-icon icon="fa-solid fa-plus" />
 					</b-button>
 				</div>
@@ -220,7 +220,7 @@
 			},
 
 			edit(item) {
-				this.$refs.novaApostaModal.preencheCampos(item);
+				this.$refs.novaApostaModal.preencheCampos(item, this.jogo);
 			},
 
 			doDelete(item) {
@@ -247,7 +247,7 @@
 			},
 
 			getJogos() {
-				let url = api.jogos;
+				let url = api.jogosCombo;
 				axios.get(url, this.header).then(response => {
 					if (response.data.status == 0) {
 						let jogos = response.data.data;

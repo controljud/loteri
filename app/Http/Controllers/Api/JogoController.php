@@ -114,11 +114,11 @@ class JogoController extends Controller
         }
     }
 
-    public function getJogos()
+    public function getJogos($per_page = 10)
     {
         try {
             if ($this->isAdminUser()) {
-                $jogos = Jogos::all();
+                $jogos = Jogos::paginate($per_page);
 
                 return response()->json([
                     "status" => 0,
@@ -132,6 +132,27 @@ class JogoController extends Controller
                 "message" => "Usuário sem acesso a essa funcionalidade",
                 "data" => null
             ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro retorno dos dados: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro no retorno dos dados",
+                "data" => null
+            ], 500);
+        }
+    }
+
+    public function getJogosCombo()
+    {
+        try {
+            $jogos = Jogos::all();
+
+            return response()->json([
+                "status" => 0,
+                "message" => "Jogos retornados com sucesso",
+                "data" => $jogos
+            ]);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
 

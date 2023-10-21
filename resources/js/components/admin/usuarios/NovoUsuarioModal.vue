@@ -1,51 +1,53 @@
 <template>
     <div>
-        <b-modal id="novoSorteioModal" hide-footer hide-header-close>
-            <template #modal-title>Novo Sorteio</template>
+        <b-modal id="novoUsuarioModal" hide-footer hide-header-close>
+            <template #modal-title>Novo Usuário</template>
             <div class="d-block text-left">
                 <b-form>
                     <div class="row">
                         <div class="col-md-6">
-                            <b-form-group label="Numero do sorteio *" label-for="numero">
-                                <b-form-input id="numero" type="text" autocomplete="off" v-model="form.numero"></b-form-input>
+                            <b-form-group label="Status *" label-for="status">
+                                <b-form-checkbox
+                                    id="checkbox-1"
+                                    v-model="form.status"
+                                    name="checkbox-1"
+                                    value="1"
+                                    unchecked-value="0"
+                                >
+                                </b-form-checkbox>
                             </b-form-group>
                         </div>
-                        <div class="col-6">
-                            <b-form-group label="Data do Sorteio *" label-for="data">
-                                <b-form-input type="date" v-model="form.data"></b-form-input>
-                            </b-form-group>
-                        </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-md-6">
-                            <b-form-group label="Prêmio" label-for="premio">
-                                <b-form-input type="number" autocomplete="off" v-model="form.premio"></b-form-input>
+                            <b-form-group label="Administrador *" label-for="administrador">
+                                <b-form-checkbox
+                                    id="checkbox-1"
+                                    v-model="form.admin"
+                                    name="checkbox-1"
+                                    value="1"
+                                    unchecked-value="0"
+                                >
+                                </b-form-checkbox>
                             </b-form-group>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12">
-                            <label for="">Dezenas *</label>
-                            <div class="v_dezenas" :key="v_dezenas">
-                                <div v-for="y in tamanho" :key="y" class="v_dezena" v-on:click="editDezenas(y)" :class="[dezenas.indexOf(y) > -1 ? activeClass : inactiveClass]" :ref="'dezena_' + y" :id="'dezena_' + y">
-                                    <span v-if="y < 10">0{{ y }}</span>
-                                    <span v-if="y >= 10">{{ y }}</span>
-                                </div>
-                            </div>
+                            <b-form-group label="Nome" label-for="nome">
+                                <b-form-input id="nome" type="text" autocomplete="off" v-model="form.name"></b-form-input>
+                            </b-form-group>
+                        </div>
+                    </div>
 
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <span class="caracteres">{{ dezenas.length }}<span v-if="dezenas.length == 1"> dezena selecionada</span><span v-if="dezenas.length != 1"> dezenas selecionadas</span></span>
-                                </div>
-                            </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <b-form-group label="E-mail" label-for="email">
+                                <b-form-input id="email" type="text" autocomplete="off" v-model="form.email"></b-form-input>
+                            </b-form-group>
+                        </div>
 
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <a href="javascript:void(0)" class="btn btn-sm btn-light" v-on:click="limparDezenas">Limpar</a>
-                                </div>
-                            </div>
+                        <div class="col-md-4">
+                            
                         </div>
                     </div>
                 </b-form>
@@ -54,12 +56,12 @@
 
                 <div class="row">
                     <div class="col-md-12 right">
-                        <b-button type="button" variant="success" block @click="salvarSorteio">
+                        <b-button type="button" variant="success" block @click="salvarUsuario">
                             <font-awesome-icon icon="fa-solid fa-save" />
                         </b-button>
 
                         <b-button type="button" variant="light" block >
-                            <font-awesome-icon icon="fa-solid fa-close" @click="$bvModal.hide('novoSorteioModal');"/>
+                            <font-awesome-icon icon="fa-solid fa-close" @click="$bvModal.hide('novoUsuarioModal');"/>
                         </b-button>
                     </div>
                 </div>
@@ -83,136 +85,36 @@
 					}
 				},
 
-                dezenaIndex: 0,
-                dezenas: [],
-                tamanho: 60,
                 form: {
                     id: null,
-                    id_jogo: null,
-                    numero: null,
-                    dezenas: null,
-                    data: null,
-                    premio: null
+                    name: null,
+                    email: null,
+                    status: null,
+                    administrador: null,
+                    image: null
                 },
 
-                ultimoSorteio: null,
                 activeClass: 'activeClass',
                 inactiveClass: '',
-                v_dezenas: 0, 
-                hoje: null,
-                totalDezenas: 6
+                hoje: null
             }
         },
 
         created: function() {
             this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
-
-            axios.get(api.sorteio_atual, this.header).then(response => {
-                this.ultimoSorteio = response.data.data[0];
-                this.hoje = response.data.data[1];
-
-                if (response.data.status == 0 && this.ultimoSorteio.dezenas == null) {
-                    this.form.numero = this.ultimoSorteio.numero + 1;
-                    this.form.data = this.hoje;
-                } else {
-                    this.form.numero = (this.ultimoSorteio.numero) + 1;
-                    this.form.data = this.hoje;
-                }
-            }).catch(error => {
-                console.log(error);
-            });
         },
 
         methods: {
-            salvarSorteio() {
-                if (this.dezenas.length == this.totalDezenas) {
-                    if (
-                        this.form.numero != null
-                        && this.form.data != null
-                        && (this.dezenas.length > 5 && this.dezenas.length < 16)
-                    ) {
-                        this.form.id_jogo = this.idJogo;
-                        this.form.dezenas = this.dezenas.join('-');
-
-                        axios.post(api.sorteio, this.form, this.header).then(response => {
-                            if (response.data.status == 0) {
-                                this.$toast.success(response.data.message);
-
-                                this.form.dezenas = null;
-                                this.zeraCampos();
-
-                                this.$emit('atualizarTabela');
-                            } else {
-                                this.$toast.warning(response.data.mensage);
-                            }
-                        }).catch(error => {
-                            console.log(error.response.data.message);
-                            if (error.response.status == 400) {
-                                this.$toast.warning(error.response.data.message);
-                            } else {
-                                this.$toast.error(error.response.data.message);
-                            }
-                        });
-                    } else {
-                        this.$toast.warning("Preencha todos os campos obrigatórios");
-                    }
-                } else {
-                    this.$toast.warning("É obrigatório o preenchimento de exatamente " + this.totalDezenas + " dezenas");
-                }
-            },
-
-            editDezenas(dezena) {
-                let index = this.dezenas.indexOf(dezena);
-
-                if (index > -1) {
-                    this.dezenas.splice(index, 1);
-                } else if (index < 0 && this.dezenas.length < 15) {
-                    this.dezenas.push(dezena);
-                }
-            },
-
-            limparDezenas() {
-                this.dezenas = [];
+            salvarUsuario() {
+                
             },
             
             preencheCampos(item) {
-                this.form.id = item.id;
-                this.form.id_jogo = this.idJogo;
-                this.form.numero = item.numero;
-                this.form.premio = item.premio;
-
-                let dt = item.data.split('/');
-                this.form.data = dt[2] + '-' + dt[1] + '-' + dt[0];
                 
-                this.dezenas = [];
-                let dezenas = item.dezenas.split('-');
-                for (let i = 0; i < dezenas.length; i++) {
-                    this.dezenas.push(dezenas[i] * 1);
-                }
-
-                this.selectDezenas();
             },
 
             zeraCampos() {
-                this.form.id = null;
-                this.form.id_jogo = null;
-                this.form.numero = this.ultimoSorteio.numero + 1;
-                this.form.data = this.hoje;
-                this.form.premio = null;
-
-                this.limparDezenas();
-            },
-
-            selectDezenas() {
-                setTimeout(() => {
-                    for (let i = 1; i <= this.tamanho; i++) {
-                        if (this.dezenas.indexOf(numero) > -1) {
-                            let elementz = 'dezena_' + i.toString();
-
-                            this.$refs[elementz][0].classList.add('activeClass');
-                        }
-                    }
-                }, 400);
+                
             }
         }
     }

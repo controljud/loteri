@@ -11,7 +11,7 @@ class Aposta extends Model
     use HasFactory;
 
     protected $fillable = [
-        'numero', 'data', 'dezenas'
+        'id_jogo', 'numero', 'data', 'dezenas'
     ];
     protected $table = "lt_apostas";
 
