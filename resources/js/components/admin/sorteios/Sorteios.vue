@@ -156,6 +156,8 @@ export default ({
                     if (response.data.data.adicionados > 0) {
                         this.$toast.success(response.data.message);
 
+                        this.getData(1);
+
                         this.updateTotaisJogos(api);
                     } else {
                         this.$toast.success("Não há sorteios novos");
@@ -182,7 +184,7 @@ export default ({
             }
 
             axios.put(api.totais, body, this.header).then(retorno => {
-                this.getData(1);
+                console.log('Totals generated');
             });
         },
 

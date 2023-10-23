@@ -353,52 +353,54 @@ class JogoController extends Controller
                         }
                     }
 
-                    $arraySort = [];
-                    foreach ($totaisJogo as $key => $total) {
-                        if (!in_array($total, $arraySort)) {
-                            $arraySort[] = $total;
-                        }
-                    }
-
-                    usort($arraySort, array($this, "sortArraySimple"));
-
-                    $x1 = 240; //RED and BLUE - subtrair
-                    $x2 = 20;
-                    $y1 = 250; //GREEN - somar
-                    $y2 = 140;
-                    $totalArray = count($arraySort);
-
-                    $stepX = ($x1 - $x2) / $totalArray;
-                    $stepY = ($y1 - $y2) / $totalArray;
-
-                    $arrayColor = [];
-                    $xStep = $x1;
-                    $yStep = $y1;
-                    foreach ($arraySort as $valor) {
-                        $xStep -= $stepX;
-                        $yStep -= $stepY;
-                        $arrayColor[$valor] = 'rgb(' . round($xStep) . ', ' . round($yStep) . ', ' . round($xStep) . ')';
-                    }
-
-                    foreach ($totaisJogo as $keyx => $total) {
-                        $cor = '';
-                        foreach ($arrayColor as $keyy => $color) {
-                            if ($total == $keyy) {
-                                $cor = $color;
+                    if (count($totaisJogo) > 0) {
+                        $arraySort = [];
+                        foreach ($totaisJogo as $key => $total) {
+                            if (!in_array($total, $arraySort)) {
+                                $arraySort[] = $total;
                             }
                         }
 
-                        $totaisJogo[$keyx] = [
-                            $total,
-                            $cor
-                        ];
+                        usort($arraySort, array($this, "sortArraySimple"));
+
+                        $x1 = 240; //RED and BLUE - subtrair
+                        $x2 = 20;
+                        $y1 = 250; //GREEN - somar
+                        $y2 = 140;
+                        $totalArray = count($arraySort);
+
+                        $stepX = ($x1 - $x2) / $totalArray;
+                        $stepY = ($y1 - $y2) / $totalArray;
+
+                        $arrayColor = [];
+                        $xStep = $x1;
+                        $yStep = $y1;
+                        foreach ($arraySort as $valor) {
+                            $xStep -= $stepX;
+                            $yStep -= $stepY;
+                            $arrayColor[$valor] = 'rgb(' . round($xStep) . ', ' . round($yStep) . ', ' . round($xStep) . ')';
+                        }
+
+                        foreach ($totaisJogo as $keyx => $total) {
+                            $cor = '';
+                            foreach ($arrayColor as $keyy => $color) {
+                                if ($total == $keyy) {
+                                    $cor = $color;
+                                }
+                            }
+
+                            $totaisJogo[$keyx] = [
+                                $total,
+                                $cor
+                            ];
+                        }
+
+                        $totais = new Totais;
+                        $totais->id_jogo = $jogo->id;
+                        $totais->totais = json_encode($totaisJogo);
+
+                        $totais->save();
                     }
-
-                    $totais = new Totais;
-                    $totais->id_jogo = $jogo->id;
-                    $totais->totais = json_encode($totaisJogo);
-
-                    $totais->save();
                 }
 
                 return response()->json([

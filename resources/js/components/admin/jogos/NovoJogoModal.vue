@@ -59,7 +59,7 @@
                         </b-button>
 
                         <b-button type="button" variant="light" block >
-                            <font-awesome-icon icon="fa-solid fa-close" @click="$bvModal.hide('novoJogooModal');"/>
+                            <font-awesome-icon icon="fa-solid fa-close" @click="$bvModal.hide('novoJogoModal');"/>
                         </b-button>
                     </div>
                 </div>
@@ -119,7 +119,6 @@
                             this.$toast.warning(response.data.mensage);
                         }
                     }).catch(error => {
-                        console.log(error.response.data.message);
                         if (error.response.status == 400) {
                             this.$toast.warning(error.response.data.message);
                         } else {
@@ -132,7 +131,6 @@
             },
             
             preencheCampos(item) {
-                console.log(item);
                 this.form.id = item.id;
                 this.form.jogo = item.jogo;
                 this.form.quantidade_dezenas = item.quantidade_dezenas;
