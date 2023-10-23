@@ -106,15 +106,46 @@
 
         methods: {
             salvarUsuario() {
-                
+                if (
+                    this.form.name != ""
+                    && this.form.email != ""
+                ) {
+                    axios.post(api.usuario, this.form, this.header).then(response => {
+                        if (response.data.status == 0) {
+                            this.$toast.success(response.data.message);
+
+                            this.$emit('atualizarTabela');
+                        } else {
+                            this.$toast.warning(response.data.message);
+                        }
+                    }).catch(error => {
+                        if (error.response.status == 400) {
+                            this.$toast.warning(error.response.data.message);
+                        } else {
+                            this.$toast.error(error.response.data.message);
+                        }
+                    })
+                } else {
+                    this.$toast.warning("Preencha todos os campos obrigatórios");
+                }
             },
             
             preencheCampos(item) {
-                
+                this.form.id = item.id;
+                this.form.name = item.name;
+                this.form.email = item.email;
+                this.form.status = item.status;
+                this.form.administrador = item.administrador;
+                this.form.image = item.image;
             },
 
             zeraCampos() {
-                
+                this.form.id = null;
+                this.form.name = null;
+                this.form.email = null;
+                this.form.status = null;
+                this.form.administrador = null;
+                this.form.image = null;
             }
         }
     }

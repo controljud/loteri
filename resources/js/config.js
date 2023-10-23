@@ -25,5 +25,6 @@ export const api = {
     jogos: '/api/jogo/jogos',
     jogosCombo: '/api/jogo/jogos/combo',
 
-    usuarios: '/api/usuario/usuarios'
+    usuarios: '/api/usuario/usuarios',
+    usuario: '/api/usuario'
 }

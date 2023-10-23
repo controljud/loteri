@@ -56,5 +56,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::group(['prefix' => 'usuario'], function() {
         Route::get('/quantidade', 'App\Http\Controllers\Api\LoginController@getQuantidadeUsuarios');
         Route::get('/usuarios', 'App\Http\Controllers\Api\LoginController@getUsuarios');
+
+        Route::post('/', 'App\Http\Controllers\Api\LoginController@postUsuario');
+        Route::delete('/{id_usuairo}', 'App\Http\Controllers\Api\LoginController@deleteUsuario');
     });
 });

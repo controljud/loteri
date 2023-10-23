@@ -39,6 +39,12 @@
                 v-on:atualizarTabela="atualizarTabela"
                 ref="novoUsuarioModal"
             ></NovoUsuarioModal>
+
+            <ConfirmModal
+                :texto="texto"
+                v-on:doDelete="doDelete"
+                ref="confirmModal"
+            ></ConfirmModal>
         </div>
     </div>
 </template>
@@ -72,6 +78,7 @@ export default ({
                 { key: 'name', label: 'Nome' },
                 { key: 'email', label: 'E-mail' },
                 { key: 'status', label: 'Status', class: 'text-center' },
+                { key: 'administrador', label: 'Administrador', class: 'text-center' },
                 { key: 'actions', label: 'Ações', class: 'text-center' }
             ],
             last_page: 1,
@@ -83,7 +90,9 @@ export default ({
                 { value: 1, text: 'Mega Sena' },
             ],
             isLoading: false,
-            tipo: 'usuario'
+            tipo: 'usuario',
+
+            texto: ''
         }
     },
 
@@ -124,71 +133,31 @@ export default ({
             });
         },
 
-        updateData() {
-            this.isLoading = true;
-            let body = {
-                'id_jogo': this.jogo
-            }
-
-            axios.put(api.sorteios, body, this.header).then(response => {
-                if (response.status == 200) {
-                    if (response.data.data.adicionados > 0) {
-                        this.$toast.success(response.data.message);
-
-                        this.updateTotaisJogos(api);
-                    } else {
-                        this.$toast.success("Não há sorteios novos");
-                    }
-                }
-                
-                this.isLoading = false;
-            }).catch(error => {
-                this.items = null;
-                
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
-
-                this.isLoading = false;
-            });
-        },
-
-        updateTotaisJogos(api) {
-            let body = {
-                'id_jogo': this.jogo
-            }
-
-            axios.put(api.totais, body, this.header).then(retorno => {
-                this.getData(1);
-            });
-        },
-
         linkGen(page) {
             this.getData(page);
         },
 
         edit(item) {
-            this.$bvModal.show('novoSorteioModal');
+            this.$bvModal.show('novoUsuarioModal');
+            this.$refs.novoUsuarioModal.preencheCampos(item);
         },
 
         doConfirm(item) {
-            this.$refs.confirmaModal.preencheItem(item);
+            this.$refs.confirmModal.preencheItem(item);
             this.$bvModal.show('confirmaModal');
         },
 
         doDelete(item) {
             if (item != null) {
-                this.deleteSorteio(item);
+                this.deleteUsuario(item);
             } else {
-                this.$toast.warning("Não há sorteio selecionado");
+                this.$toast.warning("Não há usuário selecionado");
             }
         },
 
-        deleteSorteio(item) {
-            let url = api.sorteio + '/' + item.id;
-				
+        deleteUsuario(item) {
+            let url = api.usuario + '/' + item.id;
+
             axios.delete(url, this.header).then(response => {
                 this.$toast.success(response.data.message);
                 this.getData(this.currentPage);
@@ -202,7 +171,7 @@ export default ({
         },
 
         atualizarTabela() {
-            this.$bvModal.hide('novoSorteioModal');
+            this.$bvModal.hide('novoUsuarioModal');
             this.getData(this.currentPage);
         }
     }

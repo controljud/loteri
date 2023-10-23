@@ -14,6 +14,13 @@
                         </b-iconstack>
                     </template>
 
+                    <template #cell(administrador)="item">
+                        <b-iconstack font-scale="1">
+                            <b-icon v-if="item.value == 0 || item.value == null" stacked icon="x-square-fill" variant="danger"></b-icon>
+                            <b-icon v-if="item.value == 1" stacked icon="check-circle-fill" variant="success"></b-icon>
+                        </b-iconstack>
+                    </template>
+
                     <template #cell(acertos)="item">
                         <b-form-rating v-if="item.value == 0" id="rating-6" v-model="item.value" stars="6" disabled  style="max-width: 175px; margin: 0 auto;"></b-form-rating>
                         <b-form-rating v-if="item.value > 0 && item.value <= 3" id="rating-6" v-model="item.value" stars="6" variant="warning" readonly style="max-width: 175px; margin: 0 auto;"></b-form-rating>

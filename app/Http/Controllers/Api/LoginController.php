@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
@@ -47,20 +49,131 @@ class LoginController extends Controller
 
     public function cadastro(Request $request)
     {
-        User::create(array(
-            'name' => $request->name,
-            'password' => Hash::make($request->password),
-            'email' => $request->email,
-            'status' => 1
-        ));
+        try {
+            if ($this->isAdminUser()) {
+                $usuario = new User;
+                $usuario->name = $request->name;
+                $usuario->email = $request->email;
+                $usuario->password = Hash::make($request->password);
+                $usuario->save();
 
-        $retorno = [
-            "status" => 0,
-            "mensagem" => "Retorno Cadastro OK",
-            "data" => null
-        ];
-        
-        return response()->json($retorno);
+                $retorno = [
+                    "status" => 0,
+                    "message" => "Cadastro realizado com sucesso",
+                    "data" => null
+                ];
+                
+                return response()->json($retorno);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro na gravação do usuário: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro na gravação do usuário",
+                "data" => null
+            ], 500);
+        }
+    }
+
+    public function postUsuario(Request $request)
+    {
+        try {
+            $now = Carbon::now();
+            if ($this->isAdminUser()) {
+                if ($request->id) {
+                    $usuario = User::where('id', $request->id)->first();
+                } else {
+                    $usuario = new User;
+                }
+
+                $usuario->name = $request->name;
+                $usuario->email = $request->email;
+                $usuario->password = Hash::make("123456");
+
+                if ($request->status) {
+                    $usuario->status = 1;
+                } else {
+                    $usuario->status = null;
+                }
+
+                $usuario->save();
+
+                // Incluir campo administrador na tabela de usuários
+                // if ($request->administrador) {
+                //     if ($request->id) {
+                //         if (!$admin = DB::table('lt_admin_users')->where('id_user', $request->id)->first()) {
+                //             DB::table('lt_admin_users')->insert(['id_user' => $request->id, 'created_at' => $now, 'updated_at' => $now]);
+                //         }
+                //     }
+                // }
+
+                $retorno = [
+                    "status" => 0,
+                    "message" => "Cadastro realizado com sucesso",
+                    "data" => null
+                ];
+                
+                return response()->json($retorno);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro na gravação do usuário: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro na gravação do usuário",
+                "data" => null
+            ], 500);
+        }
+    }
+
+    public function deleteUsuario($id)
+    {
+        try {
+            if ($this->isAdminUser()) {
+                if ($usuario = User::where('id', $id)->first()) {
+                    $usuario->delete();
+
+                    return response()->json([
+                        "status" => 0,
+                        "message" => "Usuário excluído com sucesso",
+                        "data" => null
+                    ]);
+                }
+
+                return response()->json([
+                    "status" => 1,
+                    "message" => "Usuário não encontrado",
+                    "data" => null
+                ], 400);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro na exclusão do usuário: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro na exclusão do usuário",
+                "data" => null
+            ], 500);
+        }
     }
 
     public function getQuantidadeUsuarios()
@@ -98,10 +211,14 @@ class LoginController extends Controller
     {
         try {
             if ($this->isAdminUser()) {
-                return response()->json([
+                $usuarios = User::select('users.id', 'name', 'email', 'status', DB::raw('case when lt_admin_users.id_user is not null then 1 else 0 end as administrador'), 'imagem')
+                    ->leftJoin('lt_admin_users', 'lt_admin_users.id_user', 'users.id')
+                    ->paginate($per_page);
+                
+                    return response()->json([
                     'status' => 0,
                     'message' => '',
-                    'data' => User::select('id', 'name', 'email', 'status', 'imagem')->paginate($per_page)
+                    'data' => $usuarios
                 ]);
             }
 
