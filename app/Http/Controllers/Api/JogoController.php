@@ -627,6 +627,9 @@ class JogoController extends Controller
 
     private function isAdminUser()
     {
-        return User::where('users.id', Auth::id())->join('lt_admin_users', 'users.id', 'lt_admin_users.id_user')->exists();
+        return User::where('users.id', Auth::id())
+            ->join('lt_user_types', 'users.user_type', 'lt_user_types.id')
+            ->where('lt_user_types.id', 1)
+            ->exists();
     }
 }

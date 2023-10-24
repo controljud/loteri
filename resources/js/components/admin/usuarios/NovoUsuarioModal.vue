@@ -18,15 +18,10 @@
                             </b-form-group>
                         </div>
                         <div class="col-md-6">
-                            <b-form-group label="Administrador *" label-for="administrador">
-                                <b-form-checkbox
-                                    id="checkbox-1"
-                                    v-model="form.admin"
-                                    name="checkbox-1"
-                                    value="1"
-                                    unchecked-value="0"
-                                >
-                                </b-form-checkbox>
+                            <b-form-group label="Tipo *" label-for="tipo">
+                                <b-select v-model="tipo" class="form-control">
+                                    <option v-for="tp in tipos" v-bind:key="tp.id" :selected="tp.id == 2 ? true : false" >{{ tp.tipo }}</option>
+                                </b-select>
                             </b-form-group>
                         </div>
                     </div>
@@ -90,18 +85,22 @@
                     name: null,
                     email: null,
                     status: null,
-                    administrador: null,
+                    tipo: null,
                     image: null
                 },
 
                 activeClass: 'activeClass',
                 inactiveClass: '',
-                hoje: null
+                hoje: null,
+                tipos: [],
+                tipo: null
             }
         },
 
         created: function() {
+            this.zeraCampos();
             this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
+            this.getUserTypes();
         },
 
         methods: {
@@ -110,6 +109,7 @@
                     this.form.name != ""
                     && this.form.email != ""
                 ) {
+                    this.form.tipo = this.tipo;
                     axios.post(api.usuario, this.form, this.header).then(response => {
                         if (response.data.status == 0) {
                             this.$toast.success(response.data.message);
@@ -118,13 +118,17 @@
                         } else {
                             this.$toast.warning(response.data.message);
                         }
+
+                        this.zeraCampos();
                     }).catch(error => {
                         if (error.response.status == 400) {
                             this.$toast.warning(error.response.data.message);
                         } else {
                             this.$toast.error(error.response.data.message);
                         }
-                    })
+                        
+                        this.zeraCampos();
+                    });
                 } else {
                     this.$toast.warning("Preencha todos os campos obrigatórios");
                 }
@@ -144,8 +148,28 @@
                 this.form.name = null;
                 this.form.email = null;
                 this.form.status = null;
-                this.form.administrador = null;
+                this.form.tipo = null;
                 this.form.image = null;
+
+                this.tipo = 'Comum';
+            },
+
+            getUserTypes() {
+                axios.get(api.usuario_tipo, this.header).then(response => {
+                    this.tipos = response.data.data;
+                }).catch(error => {
+                    if (error.response.status == 400) {
+                        this.$toast.warning(error.response.data.message);
+                    } else {
+                        this.$toast.error(error.response.data.message);
+                    }
+                });
+            },
+
+            preencheTipo(item) {
+                if (item != null) {
+                    this.tipo = item.tipo;
+                }
             }
         }
     }

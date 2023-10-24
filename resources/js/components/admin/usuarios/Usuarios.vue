@@ -77,18 +77,14 @@ export default ({
                 { key: 'imagem', label: '', class: 'text-center' },
                 { key: 'name', label: 'Nome' },
                 { key: 'email', label: 'E-mail' },
+                { key: 'tipo', label: 'Tipo', class: 'text-center' },
                 { key: 'status', label: 'Status', class: 'text-center' },
-                { key: 'administrador', label: 'Administrador', class: 'text-center' },
                 { key: 'actions', label: 'Ações', class: 'text-center' }
             ],
+            jogo: 1,
             last_page: 1,
             currentPage: 1,
             isBusy: false,
-            jogo: 1,
-            jogos: [
-                { value: null, text: '--- Selecione um jogo ---' },
-                { value: 1, text: 'Mega Sena' },
-            ],
             isLoading: false,
             tipo: 'usuario',
 
@@ -140,6 +136,7 @@ export default ({
         edit(item) {
             this.$bvModal.show('novoUsuarioModal');
             this.$refs.novoUsuarioModal.preencheCampos(item);
+            this.$refs.novoUsuarioModal.preencheTipo(item);
         },
 
         doConfirm(item) {

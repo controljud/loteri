@@ -59,5 +59,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 
         Route::post('/', 'App\Http\Controllers\Api\LoginController@postUsuario');
         Route::delete('/{id_usuairo}', 'App\Http\Controllers\Api\LoginController@deleteUsuario');
+
+        Route::get('/tipos', 'App\Http\Controllers\Api\LoginController@getTiposUsuario');
     });
 });

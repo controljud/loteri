@@ -26,5 +26,6 @@ export const api = {
     jogosCombo: '/api/jogo/jogos/combo',
 
     usuarios: '/api/usuario/usuarios',
-    usuario: '/api/usuario'
+    usuario: '/api/usuario',
+    usuario_tipo: '/api/usuario/tipos'
 }

@@ -55,6 +55,10 @@ class LoginController extends Controller
                 $usuario->name = $request->name;
                 $usuario->email = $request->email;
                 $usuario->password = Hash::make($request->password);
+
+                $usuario->status = 1;
+                $usuario->user_type = 2;
+
                 $usuario->save();
 
                 $retorno = [
@@ -103,16 +107,15 @@ class LoginController extends Controller
                     $usuario->status = null;
                 }
 
-                $usuario->save();
+                if ($request->tipo) {
+                    if ($tipo = DB::table('lt_user_types')->where('tipo', $request->tipo)->first()) {
+                        $usuario->user_type = $tipo->id;
+                    } else {
+                        $usuario->user_type = 2;
+                    }
+                }
 
-                // Incluir campo administrador na tabela de usuários
-                // if ($request->administrador) {
-                //     if ($request->id) {
-                //         if (!$admin = DB::table('lt_admin_users')->where('id_user', $request->id)->first()) {
-                //             DB::table('lt_admin_users')->insert(['id_user' => $request->id, 'created_at' => $now, 'updated_at' => $now]);
-                //         }
-                //     }
-                // }
+                $usuario->save();
 
                 $retorno = [
                     "status" => 0,
@@ -211,11 +214,11 @@ class LoginController extends Controller
     {
         try {
             if ($this->isAdminUser()) {
-                $usuarios = User::select('users.id', 'name', 'email', 'status', DB::raw('case when lt_admin_users.id_user is not null then 1 else 0 end as administrador'), 'imagem')
-                    ->leftJoin('lt_admin_users', 'lt_admin_users.id_user', 'users.id')
+                $usuarios = User::select('users.id', 'name', 'email', 'status', 'users.user_type', 'lt_user_types.tipo', 'imagem')
+                    ->leftJoin('lt_user_types', 'lt_user_types.id', 'users.user_type')
                     ->paginate($per_page);
-                
-                    return response()->json([
+
+                return response()->json([
                     'status' => 0,
                     'message' => '',
                     'data' => $usuarios
@@ -238,8 +241,40 @@ class LoginController extends Controller
         }
     }
 
+    public function getTiposUsuario()
+    {
+        try {
+            if ($this->isAdminUser()) {
+                $tipos = DB::table('lt_user_types')->get();
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Tipos retornados com sucesso',
+                    'data' => $tipos
+                ]);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Usuário sem acesso a essa funcionalidade",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro retorno dos dados: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro no retorno dos dados",
+                "data" => null
+            ], 500);
+        }
+    }
+
     private function isAdminUser()
     {
-        return User::where('users.id', Auth::id())->join('lt_admin_users', 'users.id', 'lt_admin_users.id_user')->exists();
+        return User::where('users.id', Auth::id())
+            ->join('lt_user_types', 'users.user_type', 'lt_user_types.id')
+            ->where('lt_user_types.id', 1)
+            ->exists();
     }
 }
