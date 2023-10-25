@@ -135,12 +135,6 @@ export default ({
             }).catch(error => {
                 this.items = null;
                 
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
-
                 this.isBusy = false;
             });
         },
@@ -168,12 +162,6 @@ export default ({
             }).catch(error => {
                 this.items = null;
                 
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
-
                 this.isLoading = false;
             });
         },
@@ -233,13 +221,15 @@ export default ({
         getJogos() {
             let url = api.jogos;
             axios.get(url, this.header).then(response => {
-                if (response.data.status == 0) {
+                let status = response.data.status;
+
+                if (status == 0) {
                     let jogos = response.data.data;
 
                     this.jogos = [
                         { value: null, text: '--- Selecione um jogo ---' }
                     ];
-
+                    
                     jogos.map(jogo => {
                         this.jogos.push({ value: jogo.id, text: jogo.jogo });
                     });

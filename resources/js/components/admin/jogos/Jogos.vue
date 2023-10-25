@@ -122,12 +122,6 @@ export default ({
             }).catch(error => {
                 this.items = null;
                 
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
-
                 this.isBusy = false;
             });
         },
@@ -153,12 +147,6 @@ export default ({
             }).catch(error => {
                 this.items = null;
                 
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
-
                 this.isLoading = false;
             });
         },

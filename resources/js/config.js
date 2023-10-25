@@ -29,5 +29,6 @@ export const api = {
 
     usuarios: '/api/usuario/usuarios',
     usuario: '/api/usuario',
-    usuario_tipo: '/api/usuario/tipos'
+    usuario_tipo: '/api/usuario/tipos',
+    usuario_admin: '/api/usuario/admin'
 }

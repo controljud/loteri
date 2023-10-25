@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 #Autenticação
 Route::post('/login', 'App\Http\Controllers\Api\LoginController@login');
 Route::post('/cadastro', 'App\Http\Controllers\Api\LoginController@cadastro');
+Route::get('/usuario/admin/{id_user}', 'App\Http\Controllers\Api\LoginController@getUserAdmin');
 
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::group(['prefix' => 'jogo'], function() {

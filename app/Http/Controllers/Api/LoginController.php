@@ -270,6 +270,36 @@ class LoginController extends Controller
         }
     }
 
+    public function getUserAdmin($id_user)
+    {
+        try {
+            $existe = false;
+
+            $userAdmin = User::where('users.id', $id_user)
+                ->join('lt_user_types', 'users.user_type', 'lt_user_types.id')
+                ->where('lt_user_types.id', 1)
+                ->first();
+
+            if ($userAdmin) {
+                $existe = true;
+            }
+
+            return response()->json([
+                'status' => 0,
+                'message' => 'Usuário retornado com sucesso',
+                'data' => $existe
+            ]);
+        } catch (Exception $ex) {
+            Log::error("Erro retorno dos dados: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro no retorno dos dados",
+                "data" => null
+            ], 500);
+        }
+    }
+
     private function isAdminUser()
     {
         return User::where('users.id', Auth::id())

@@ -11,24 +11,18 @@
 		<main class="d-flex flex-nowrap" v-if="isAdmin">
 			<top-menu-admin></top-menu-admin>
 
-			<div class="col">
+			<div class="col" v-if="isAdmin">
 				<navbar-admin></navbar-admin>
 				<transition name="fade" mode="out-in">
 					<router-view></router-view>
 				</transition>
 			</div>
 		</main>
-
-		<!-- <top-menu v-if="!isAdmin"></top-menu>
-		<top-menu-admin v-if="isAdmin"></top-menu-admin>
-
-		<transition name="fade" mode="out-in">
-			<router-view></router-view>
-		</transition> -->
 	</div>
 </template>
 
 <script>
+	import {api} from '../config';
 	import TopMenu from './shared/TopMenu.vue';
 	import TopMenuAdmin from './shared/TopMenuAdmin.vue';
 	import NavbarAdmin from './shared/NavbarAdmin.vue';
@@ -37,6 +31,7 @@
 		data() {
 			return {
 				isAdmin: false,
+				usuario: null
 			}
 		},
 
@@ -47,9 +42,13 @@
 		},
 
 		created: function() {
-			if (this.$route.name.indexOf('admin') > -1) {
+			this.usuario = JSON.parse(localStorage.getItem('user'));
+
+			if (window.location.href.indexOf('admin') > -1) {
 				this.isAdmin = true;
 			}
+
+			this.checkAdminUser();
 		},
 
 		watch:{
@@ -59,6 +58,25 @@
 				} else {
 					this.isAdmin = false;
 				}
+			}
+		},
+
+		methods: {
+			checkAdminUser() {
+				axios.get(api.usuario_admin + '/' + this.usuario.id, this.header).then(response => {
+					let isAdmin = response.data.data;
+					if (this.isAdmin && !isAdmin) {
+						localStorage.removeItem('token');
+						localStorage.removeItem('user');
+
+						window.location.href = "/";
+					}
+				}).catch(error => {
+					localStorage.removeItem('token');
+					localStorage.removeItem('user');
+
+					window.location.href = "/";
+				});
 			}
 		}
 	}

@@ -142,11 +142,7 @@ export default {
                     this.qtdJogos = response.data.data.quantidade;
                 }
             }).catch(error => {
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
+                
             });
         }, 
 
@@ -156,11 +152,7 @@ export default {
                     this.qtdSorteios = response.data.data.quantidade;
                 }
             }).catch(error => {
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
+                
             });
         },
 
@@ -170,11 +162,7 @@ export default {
                     this.qtdApostas = response.data.data.quantidade;
                 }
             }).catch(error => {
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
+                
             });
         },
 
@@ -184,11 +172,7 @@ export default {
                     this.qtdUsuarios = response.data.data.quantidade;
                 }
             }).catch(error => {
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
+                
             });
         },
 
@@ -230,11 +214,7 @@ export default {
                     };
                 }
             }).catch(error => {
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
+                
             });
         },
 
@@ -244,11 +224,7 @@ export default {
                     this.apostasFormatadas = response.data.data.apostas;
                 }
             }).catch(error => {
-                if (error.response.status == 401) {
-                    localStorage.removeItem('token');
-
-                    window.location.href = "/";
-                }
+                
             });
         },
     }
