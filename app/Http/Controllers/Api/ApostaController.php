@@ -154,6 +154,39 @@ class ApostaController extends Controller
         }
     }
 
+    public function getQuantidadeApostasJogo($id_jogo, $id_user)
+    {
+        try {
+            if ($this->isAdminUser()) {
+                $quantidade = Aposta::where('lt_apostas.id_jogo', $id_jogo)
+                    ->where('lt_apostas.id_user', $id_user)
+                    ->count();
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Quantidade retornada com sucesso",
+                    'data' => [
+                        'quantidade' => $quantidade
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => "Você não tem acesso para usar essa funcionalidade",
+                'data' => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("QUANTIDADE APOSTAS: " . $ex->getFile() . ': Linha (' . $ex->getLine() . ') - ' . $ex->getMessage());
+            
+            return response()->json([
+                'status' => 1,
+                'message' => "Ocorreu um erro na execução do serviço",
+                'data' => null
+            ], 500);
+        }
+    }
+
     public function getTotalMensal()
     {
         try {

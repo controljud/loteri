@@ -28,6 +28,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
         Route::delete('/{id}', 'App\Http\Controllers\Api\JogoController@deleteJogo');
         Route::get('/jogos', 'App\Http\Controllers\Api\JogoController@getJogos');
         Route::get('/jogos/combo', 'App\Http\Controllers\Api\JogoController@getJogosCombo');
+        Route::get('/jogos/todos', 'App\Http\Controllers\Api\JogoController@getJogosTodos');
         Route::get('/quantidade', 'App\Http\Controllers\Api\JogoController@getQuantidadeJogos');
         Route::get('/ultimo/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getUltimoJogo');
 
@@ -40,6 +41,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 
         Route::put('/totais', 'App\Http\Controllers\Api\JogoController@putTotais');
         Route::get('/totais/{id_jogo}', 'App\Http\Controllers\Api\JogoController@getTotais');
+
+        Route::get('/quantidade/usuario/{id_jogo}/{id_user}', 'App\Http\Controllers\Api\ApostaController@getQuantidadeApostasJogo');
     });
 
     Route::group(['prefix' => 'aposta'], function() {

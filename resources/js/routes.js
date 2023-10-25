@@ -5,6 +5,7 @@ import Admin from './components/admin/home/Admin.vue';
 import Sorteios from './components/admin/sorteios/Sorteios.vue';
 import Jogos from './components/admin/jogos/Jogos.vue';
 import Usuarios from './components/admin/usuarios/Usuarios.vue';
+import Perfil from './components/admin/perfil/Perfil.vue';
 
 export default [
 	{
@@ -42,6 +43,12 @@ export default [
 		path: '/admin/usuarios',
 		name: 'admin.usuarios',
 		component: Usuarios,
+		meta: {}
+	},
+	{
+		path: '/admin/perfil',
+		name: 'admin.perfil',
+		component: Perfil,
 		meta: {}
 	}
 ];

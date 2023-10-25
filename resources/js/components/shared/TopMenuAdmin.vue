@@ -42,9 +42,14 @@
                 <strong>{{usuario.name}}</strong>
             </a>
             <ul class="dropdown-menu text-small shadow">
-                <li><a class="dropdown-item" href="javascript:void(0)">Perfil</a></li>
+                <li>
+                    <router-link :to="{name: 'admin.perfil'}" class="dropdown-item" exact>
+                        <b-icon icon="person-circle"></b-icon>
+                        Perfil
+                    </router-link>
+                </li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="javascript:void(0)">Sair</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)" @click="sair"><font-awesome-icon icon="fa-solid fa-close" /> Sair</a></li>
             </ul>
         </div>
     </div>
@@ -67,7 +72,10 @@ export default {
     },
 
     methods: {
-        
+        sair() {
+            localStorage.removeItem('token');
+            window.location.href = "/";
+        },
     }
 }
 </script>
