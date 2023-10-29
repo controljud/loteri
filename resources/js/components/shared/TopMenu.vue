@@ -1,25 +1,26 @@
 <template>
   <div class="forVue">
 	<div>
-		<b-navbar toggleable="lg" type="dark" variant="info">
+		<b-navbar toggleable="lg" type="dark" variant="dark">
 			<router-link to="/" class="navbar-brand" exact >Loteri Map</router-link>
 	
 			<b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
 			<b-collapse id="nav-collapse" is-nav>
-				<b-navbar-nav class="ml-auto">
+				<b-navbar-nav>
 					<b-nav-item class="nav-link" @click="$bvModal.show('loginModal')" v-if="!logged">Login</b-nav-item>
 					<b-nav-item class="nav-link" @click="$bvModal.show('cadastroModal')" v-if="!logged">Cadastre-se</b-nav-item>
 					<b-nav-item><router-link :to="{name: 'home'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-home" /> Home</router-link></b-nav-item>
 					<b-nav-item><router-link :to="{name: 'apostas'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-star" /> Apostas</router-link></b-nav-item>
 				</b-navbar-nav>
 
-				<b-dropdown v-if="logged" id="dropdown-1" variant="primary" v-bind:text="user.name" class="m-md-2 drop-user">
-					<b-dropdown-item>{{ user.name }}</b-dropdown-item>
-					<b-dropdown-item><a class="nav-link" @click="editUser(user.id)">Perfil</a></b-dropdown-item>
-					<b-dropdown-divider></b-dropdown-divider>
-					<b-dropdown-item><a class="nav-link" @click="sair"><font-awesome-icon icon="fa-solid fa-close" /> Sair</a></b-dropdown-item>
-				</b-dropdown>
+				<b-navbar-nav class="ml-auto" v-if="logged">
+					<b-nav-item-dropdown v-bind:text="user.name" right>
+						<b-dropdown-item href="#">
+							<a class="nav-link nav-drop" @click="sair"><font-awesome-icon icon="fa-solid fa-close" /> Sair</a>
+						</b-dropdown-item>
+					</b-nav-item-dropdown>
+				</b-navbar-nav>
 			</b-collapse>
 
 		</b-navbar>
@@ -76,5 +77,9 @@
 	.drop-user {
 		position: absolute;
 		float: right;
+	}
+
+	.nav-drop {
+		color: black !important;
 	}
 </style>

@@ -125,7 +125,7 @@
                     this.form.data = this.hoje;
                 }
             }).catch(error => {
-                console.log(error);
+                
             });
         },
 
@@ -142,20 +142,18 @@
                     this.form.descricao = this.form.descricao != '' ? this.form.descricao : null;
 
                     axios.post(api.aposta, this.form, this.header).then(response => {
-                        console.log(response);
-                        // if (response.data.status == 0) {
-                        //     this.$toast.success(response.data.message);
+                        if (response.data.status == 0) {
+                            this.$toast.success(response.data.message);
 
-                        //     this.form.descricao = '';
-                        //     this.form.dezenas = null;
-                        //     this.zeraCampos();
+                            this.form.descricao = '';
+                            this.form.dezenas = null;
+                            this.zeraCampos();
 
-                        //     this.$emit('atualizarTabela');
-                        // } else {
-                        //     this.$toast.warning(response.data.mensage);
-                        // }
+                            this.$emit('atualizarTabela');
+                        } else {
+                            this.$toast.warning(response.data.mensage);
+                        }
                     }).catch(error => {
-                        console.log(error.response.data.message);
                         if (error.response.status == 400) {
                             this.$toast.warning(error.response.data.message);
                         } else {

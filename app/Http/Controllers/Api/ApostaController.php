@@ -35,7 +35,6 @@ class ApostaController extends Controller
             } else {
                 $aposta = new Aposta;
             }
-            return response()->json($aposta);
 
             $aposta->id_jogo = $request->id_jogo;
             $aposta->id_user = $request->id_user;
