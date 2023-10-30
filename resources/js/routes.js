@@ -1,5 +1,6 @@
 import Home from './components/home/Home.vue';
 import Apostas from './components/apostas/Apostas.vue';
+import Sorteios_open from './components/sorteios/Sorteios.vue';
 
 import Admin from './components/admin/home/Admin.vue';
 import Sorteios from './components/admin/sorteios/Sorteios.vue';
@@ -18,6 +19,12 @@ export default [
 		path: '/apostas',
 		name: 'apostas',
 		component: Apostas,
+		meta: {}
+	},
+	{
+		path: '/sorteios',
+		name: 'sorteios',
+		component: Sorteios_open,
 		meta: {}
 	},
 	

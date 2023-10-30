@@ -12,6 +12,7 @@
 					<b-nav-item class="nav-link" @click="$bvModal.show('cadastroModal')" v-if="!logged">Cadastre-se</b-nav-item>
 					<b-nav-item><router-link :to="{name: 'home'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-home" /> Home</router-link></b-nav-item>
 					<b-nav-item><router-link :to="{name: 'apostas'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-star" /> Apostas</router-link></b-nav-item>
+					<b-nav-item><router-link :to="{name: 'sorteios'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-star" /> Sorteios</router-link></b-nav-item>
 				</b-navbar-nav>
 
 				<b-navbar-nav class="ml-auto" v-if="logged">
