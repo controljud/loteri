@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Aposta extends Model
 {
@@ -18,14 +19,13 @@ class Aposta extends Model
     public function getApostas($id_user, $id_jogo = null, $filter, $per_page = 10)
     {
         $apostas = $this::select('lt_apostas.id', 'lt_apostas.numero', DB::raw("date_format(lt_sorteios.data, '%d/%m/%Y') AS data"), DB::raw("date_format(lt_apostas.data, '%d/%m/%Y') AS data_aposta"), 'lt_apostas.dezenas as apostado', 'lt_apostas.descricao', 'lt_sorteios.dezenas as sorteado')
-            ->join('lt_jogos', 'lt_jogos.id', 'lt_apostas.id_jogo')
-            ->join('lt_sorteios', 'lt_sorteios.id_jogo', 'lt_jogos.id')
+            ->leftJoin('lt_sorteios', 'lt_sorteios.numero', 'lt_apostas.numero')
             ->where('id_user', $id_user);
-        
+
         if ($id_jogo) {
-            $apostas = $apostas->where('lt_sorteios.id_jogo', $id_jogo);
+            $apostas = $apostas->where('lt_apostas.id_jogo', $id_jogo);
         }
-        
+
         if ($filter != 0) {
             $apostas = $apostas->where(function($query) use ($filter) {
                 $query->orWhere('lt_apostas.numero', $filter)
