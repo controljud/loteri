@@ -224,7 +224,7 @@ export default ({
                 let status = response.data.status;
 
                 if (status == 0) {
-                    let jogos = response.data.data;
+                    let jogos = response.data.data.data;
 
                     this.jogos = [
                         { value: null, text: '--- Selecione um jogo ---' }
