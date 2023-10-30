@@ -22,6 +22,7 @@
                         :fields="fields"
                         :last_page="last_page"
                         :isBusy="isBusy"
+						v-on:linkGen="linkGen"
                     ></Tabela>
 				</div>
 			</div>
@@ -31,12 +32,10 @@
 
 <script>
 	import {api} from '../../config';
-	import Paginate from 'vuejs-paginate';
 	import Tabela from '../shared/Tabela.vue';
 
 	export default {
 		components: {
-			'paginate': Paginate,
 			Tabela
 		},
 
@@ -84,21 +83,27 @@
 				let url = api.sorteios + '/' + this.jogo + '?page=' + page;
 
 				axios.get(url, this.header).then(response => {
-					let retorno = response.data.data;
+					let rows = [];
 
-                    this.currentPage = retorno.current_page ? retorno.current_page : 1;
-                    this.last_page = retorno.last_page ? retorno.last_page : 1;
+					if (response.data.data != null) {
+						let retorno = response.data.data;
 
-                    let dados = retorno.data;
-                    dados.map(function(sorteio) {
-                        let dezenas = JSON.parse(sorteio.dezenas).join('-');
+						this.currentPage = retorno.current_page ? retorno.current_page : 1;
+						this.last_page = retorno.last_page ? retorno.last_page : 1;
 
-                        sorteio.dezenas = dezenas;
-                        
-                        rows.push(sorteio);
-                    })
+						let dados = retorno.data;
+						dados.map(function(sorteio) {
+							let dezenas = JSON.parse(sorteio.dezenas).join('-');
 
-                    this.items = rows;
+							sorteio.dezenas = dezenas;
+							
+							rows.push(sorteio);
+						})
+
+						this.items = rows;
+					}
+
+					this.isBusy = false;
 				}).catch(error => {
 					this.items = null;
 					
