@@ -15,7 +15,7 @@
 					<b-nav-item><router-link :to="{name: 'sorteios'}" class="nav-link" exact v-if="logged"><font-awesome-icon icon="fa-solid fa-star" /> Sorteios</router-link></b-nav-item>
 				</b-navbar-nav>
 
-				<b-navbar-nav class="ml-auto" v-if="logged">
+				<b-navbar-nav class="ml-auto right" v-if="logged">
 					<b-nav-item-dropdown v-bind:text="user.name" right>
 						<b-dropdown-item href="#">
 							<a class="nav-link nav-drop" @click="sair"><font-awesome-icon icon="fa-solid fa-close" /> Sair</a>
@@ -82,5 +82,13 @@
 
 	.nav-drop {
 		color: black !important;
+	}
+
+	@media (min-width: 600px) {
+		.right {
+			position: absolute;
+			right: 45px;
+			margin: 10px;
+		}
 	}
 </style>
