@@ -5,13 +5,19 @@
             <div class="d-block text-left">
                 <b-form>
                     <div class="row">
-                        <b-form-file
-                            accept="image/*"
-                            v-model="form.image"
-                            placeholder="Selecione a imagem do jogo"
-                            drop-placeholder="Apague a imagem aqui"
-                        >
-                        </b-form-file>
+                        <div class="col-md-12 center">
+                            <label>
+                                <b-form-file
+                                    accept="image/*"
+                                    placeholder="Selecione a imagem do jogo"
+                                    drop-placeholder="Apague a imagem aqui"
+                                    @change="uploadImage"
+                                    :class="hide"
+                                >
+                                </b-form-file>
+                                <img :src="image" class="image" />
+                            </label>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -93,7 +99,9 @@
                 },
 
                 activeClass: 'activeClass',
-                inactiveClass: ''
+                inactiveClass: '',
+                image: '/images/trevo.png',
+                hide: 'hide'
             }
         },
 
@@ -136,6 +144,11 @@
                 this.form.quantidade_dezenas = item.quantidade_dezenas;
                 this.form.quantidade_acertos = item.quantidade_acertos;
                 this.form.status = item.status;
+
+                console.log(item);
+                if (item.imagem != null) {
+                    this.image = item.imagem;
+                }
             },
 
             zeraCampos() {
@@ -144,6 +157,18 @@
                 this.form.quantidade_dezenas = null;
                 this.form.quantidade_acertos = null;
                 this.form.status = 1;
+
+                this.image = '/images/trevo.png';
+            },
+
+            uploadImage(e) {
+                const image = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(image);
+                reader.onload = e =>{
+                    this.form.imagem = e.target.result;
+                    this.image = e.target.result;
+                };
             }
         }
     }
@@ -187,5 +212,19 @@
 
 .caracteres {
     font-size: 9px;
+}
+
+.hide {
+    display: none;
+}
+
+.image {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 35px;
+}
+
+.center {
+    text-align: center;
 }
 </style>

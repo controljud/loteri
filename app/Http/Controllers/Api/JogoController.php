@@ -12,6 +12,7 @@ use App\Models\Totais;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 use Exception;
 
@@ -30,9 +31,11 @@ class JogoController extends Controller
     public function postJogo(Request $request)
     {
         try {
+            $txt = "criado";
             if ($this->isAdminUser()) {
                 if ($request->id) {
                     $jogo = Jogos::where('id', $request->id)->first();
+                    $txt = "atualizado";
                 } else {
                     $jogo = new Jogos;
                 }
@@ -42,11 +45,25 @@ class JogoController extends Controller
                 $jogo->quantidade_acertos = $request->quantidade_acertos;
                 $jogo->status = $request->status;
 
+                if ($request->imagem && strpos($request->imagem, 'base64')) {
+                    $imagem = $request->imagem;
+                    $tipo = substr($imagem, 11, strpos($imagem, ';') - 11);
+
+                    if ($tipo == 'png' || $tipo == 'jpg' || $tipo = 'jpeg') {
+                        $nome_arquivo = md5($request->jogo) . '.' . $tipo;
+                        $dados_imagem = explode(',', $imagem)[1];
+
+                        Storage::put('public/jogos/' . $nome_arquivo, base64_decode($dados_imagem));
+
+                        $jogo->imagem = $nome_arquivo;
+                    }
+                }
+
                 $jogo->save();
 
                 return response()->json([
                     "status" => 0,
-                    "message" => "Jogo criado com sucesso",
+                    "message" => "Jogo $txt com sucesso",
                     "data" => null
                 ]);
             }
@@ -119,6 +136,12 @@ class JogoController extends Controller
         try {
             if ($this->isAdminUser()) {
                 $jogos = Jogos::paginate($per_page);
+
+                foreach ($jogos as $jogo) {
+                    if ($jogo->imagem) {
+                        $jogo->imagem = Storage::url('public/jogos/' . $jogo->imagem);
+                    }
+                }
 
                 return response()->json([
                     "status" => 0,
