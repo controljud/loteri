@@ -41,9 +41,20 @@ class LoginController extends Controller
             $user->imagem = Storage::url('public/usuarios/' . $user->imagem);
         }
 
+        if ($user->status == 1) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Login realizado com sucesso',
+                'data' => [
+                    'user' => $user,
+                    'token' => $token
+                ]
+            ]);
+        }
+
         return response()->json([
-            'status' => 0,
-            'message' => 'Login realizado com sucesso',
+            'status' => 1,
+            'message' => 'Não é possível realizar o login com usuário inativo. Entre em contato conosco para reativar seu usuário',
             'data' => [
                 'user' => $user,
                 'token' => $token
