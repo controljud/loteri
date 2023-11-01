@@ -12,6 +12,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class LoginController extends Controller
 {
@@ -36,6 +37,9 @@ class LoginController extends Controller
         }
 
         $user = $request->user();
+        if ($user->imagem) {
+            $user->imagem = Storage::url('public/usuarios/' . $user->imagem);
+        }
 
         return response()->json([
             'status' => 0,
@@ -58,6 +62,21 @@ class LoginController extends Controller
 
                 $usuario->status = 1;
                 $usuario->user_type = 2;
+
+                if ($request->imagem && strpos($request->imagem, 'base64')) {
+                    Log::info($request->imagem);
+                    $imagem = $request->imagem;
+                    $tipo = substr($imagem, 11, strpos($imagem, ';') - 11);
+
+                    if ($tipo == 'png' || $tipo == 'jpg' || $tipo = 'jpeg') {
+                        $nome_arquivo = md5($request->name) . '.' . $tipo;
+                        $dados_imagem = explode(',', $imagem)[1];
+
+                        Storage::put('public/usuarios/' . $nome_arquivo, base64_decode($dados_imagem));
+
+                        $usuario->imagem = $nome_arquivo;
+                    }
+                }
 
                 $usuario->save();
 
@@ -100,6 +119,20 @@ class LoginController extends Controller
                 $usuario->name = $request->name;
                 $usuario->email = $request->email;
                 $usuario->password = Hash::make("123456");
+
+                if ($request->imagem && strpos($request->imagem, 'base64')) {
+                    $imagem = $request->imagem;
+                    $tipo = substr($imagem, 11, strpos($imagem, ';') - 11);
+
+                    if ($tipo == 'png' || $tipo == 'jpg' || $tipo = 'jpeg') {
+                        $nome_arquivo = md5($request->name) . '.' . $tipo;
+                        $dados_imagem = explode(',', $imagem)[1];
+
+                        Storage::put('public/usuarios/' . $nome_arquivo, base64_decode($dados_imagem));
+
+                        $usuario->imagem = $nome_arquivo;
+                    }
+                }
 
                 if ($request->status) {
                     $usuario->status = 1;
@@ -217,6 +250,12 @@ class LoginController extends Controller
                 $usuarios = User::select('users.id', 'name', 'email', 'status', 'users.user_type', 'lt_user_types.tipo', 'imagem')
                     ->leftJoin('lt_user_types', 'lt_user_types.id', 'users.user_type')
                     ->paginate($per_page);
+
+                foreach ($usuarios as $usuario) {
+                    if ($usuario->imagem) {
+                        $usuario->imagem = Storage::url('public/usuarios/' . $usuario->imagem);
+                    }
+                }
 
                 return response()->json([
                     'status' => 0,

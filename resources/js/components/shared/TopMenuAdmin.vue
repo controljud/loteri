@@ -38,7 +38,7 @@
 
         <div class="dropdown">
             <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="/images/user-admin.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                <img :src="usuario_image" alt="" width="32" height="32" class="rounded-circle me-2">
                 <strong>{{usuario.name}}</strong>
             </a>
             <ul class="dropdown-menu text-small shadow">
@@ -63,12 +63,14 @@ export default {
 
     data() {
         return {
-            usuario: null
+            usuario: null,
+            usuario_image: '/images/user-admin.png'
         }
     },
 
     created: function() {
         this.usuario = JSON.parse(localStorage.getItem('user'));
+        this.usuario_image = this.usuario.imagem;
     },
 
     methods: {

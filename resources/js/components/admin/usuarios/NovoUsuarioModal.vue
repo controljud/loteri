@@ -5,6 +5,21 @@
             <div class="d-block text-left">
                 <b-form>
                     <div class="row">
+                        <div class="col-md-12 center">
+                            <label>
+                                <b-form-file
+                                    accept="image/*"
+                                    placeholder="Selecione a imagem do usuário"
+                                    drop-placeholder="Apague a imagem aqui"
+                                    @change="uploadImage"
+                                    :class="hide"
+                                >
+                                </b-form-file>
+                                <img :src="image" class="image" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6">
                             <b-form-group label="Status *" label-for="status">
                                 <b-form-checkbox
@@ -86,14 +101,17 @@
                     email: null,
                     status: null,
                     tipo: null,
-                    image: null
+                    imagem: null
                 },
 
                 activeClass: 'activeClass',
                 inactiveClass: '',
                 hoje: null,
                 tipos: [],
-                tipo: null
+                tipo: null,
+                
+                image: '/images/user-admin.png',
+                hide: 'hide'
             }
         },
 
@@ -140,7 +158,10 @@
                 this.form.email = item.email;
                 this.form.status = item.status;
                 this.form.administrador = item.administrador;
-                this.form.image = item.image;
+                
+                if (item.imagem != null) {
+                    this.image = item.imagem;
+                }
             },
 
             zeraCampos() {
@@ -149,7 +170,8 @@
                 this.form.email = null;
                 this.form.status = null;
                 this.form.tipo = null;
-                this.form.image = null;
+                
+                this.image = '/images/user-admin.png';
 
                 this.tipo = 'Comum';
             },
@@ -170,6 +192,16 @@
                 if (item != null) {
                     this.tipo = item.tipo;
                 }
+            },
+
+            uploadImage(e) {
+                const image = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(image);
+                reader.onload = e =>{
+                    this.form.imagem = e.target.result;
+                    this.image = e.target.result;
+                };
             }
         }
     }
@@ -213,5 +245,19 @@
 
 .caracteres {
     font-size: 9px;
+}
+
+.hide {
+    display: none;
+}
+
+.image {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 35px;
+}
+
+.center {
+    text-align: center;
 }
 </style>

@@ -145,7 +145,6 @@
                 this.form.quantidade_acertos = item.quantidade_acertos;
                 this.form.status = item.status;
 
-                console.log(item);
                 if (item.imagem != null) {
                     this.image = item.imagem;
                 }

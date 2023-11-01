@@ -12,7 +12,7 @@
                 <div class="col-md-6"></div>
 
                 <div class="col-md-6 right">
-                    <b-button size="sm" variant="success" @click="$bvModal.show('novoUsuarioModal');">
+                    <b-button size="sm" variant="success" @click="zeraCampos(); $bvModal.show('novoUsuarioModal');">
                         <font-awesome-icon icon="fa-solid fa-plus" />
                     </b-button>
                 </div>
@@ -131,6 +131,10 @@ export default ({
             this.$bvModal.show('novoUsuarioModal');
             this.$refs.novoUsuarioModal.preencheCampos(item);
             this.$refs.novoUsuarioModal.preencheTipo(item);
+        },
+
+        zeraCampos() {
+            this.$refs.novoUsuarioModal.zeraCampos();
         },
 
         doConfirm(item) {
