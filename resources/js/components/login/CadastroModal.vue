@@ -4,6 +4,22 @@
             <template #modal-title>Cadastro</template>
             <div class="d-block text-left">
                 <b-form>
+                    <div class="row">
+                        <div class="col-md-12 center">
+                            <label>
+                                <b-form-file
+                                    accept="image/*"
+                                    placeholder="Selecione a imagem do usuário"
+                                    drop-placeholder="Apague a imagem aqui"
+                                    @change="uploadImage"
+                                    :class="hide"
+                                >
+                                </b-form-file>
+                                <img :src="image" class="image" />
+                            </label>
+                        </div>
+                    </div>
+
                     <b-form-group label="Nome" label-for="nome">
                         <b-form-input id="nome" type="text" placeholder="Digite seu nome" autocomplete="off" v-model="form.name"></b-form-input>
                     </b-form-group>
@@ -49,8 +65,12 @@
                     name: "",
                     email: "",
                     password: "",
-                    confirm: ""
-                }
+                    confirm: "",
+                    imagem: null
+                },
+                
+                image: '/images/user-admin.png',
+                hide: 'hide'
             }
         },
 
@@ -92,7 +112,34 @@
                 this.form.email = '';
                 this.form.password = '';
                 this.form.confirm = '';
+            },
+
+            uploadImage(e) {
+                const image = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(image);
+                reader.onload = e =>{
+                    this.form.imagem = e.target.result;
+                    this.image = e.target.result;
+                };
             }
         }
     }
 </script>
+
+<style scoped>
+.hide {
+    display: none;
+}
+
+.image {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 35px;
+    border-radius: 100%;
+}
+
+.center {
+    text-align: center;
+}
+</style>

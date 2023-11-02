@@ -65,46 +65,38 @@ class LoginController extends Controller
     public function cadastro(Request $request)
     {
         try {
-            if ($this->isAdminUser()) {
-                $usuario = new User;
-                $usuario->name = $request->name;
-                $usuario->email = $request->email;
-                $usuario->password = Hash::make($request->password);
+            $usuario = new User;
+            $usuario->name = $request->name;
+            $usuario->email = $request->email;
+            $usuario->password = Hash::make($request->password);
 
-                $usuario->status = 1;
-                $usuario->user_type = 2;
+            $usuario->status = 1;
+            $usuario->user_type = 2;
 
-                if ($request->imagem && strpos($request->imagem, 'base64')) {
-                    Log::info($request->imagem);
-                    $imagem = $request->imagem;
-                    $tipo = substr($imagem, 11, strpos($imagem, ';') - 11);
+            if ($request->imagem && strpos($request->imagem, 'base64')) {
+                Log::info($request->imagem);
+                $imagem = $request->imagem;
+                $tipo = substr($imagem, 11, strpos($imagem, ';') - 11);
 
-                    if ($tipo == 'png' || $tipo == 'jpg' || $tipo = 'jpeg') {
-                        $nome_arquivo = md5($request->name) . '.' . $tipo;
-                        $dados_imagem = explode(',', $imagem)[1];
+                if ($tipo == 'png' || $tipo == 'jpg' || $tipo = 'jpeg') {
+                    $nome_arquivo = md5($request->name) . '.' . $tipo;
+                    $dados_imagem = explode(',', $imagem)[1];
 
-                        Storage::put('public/usuarios/' . $nome_arquivo, base64_decode($dados_imagem));
+                    Storage::put('public/usuarios/' . $nome_arquivo, base64_decode($dados_imagem));
 
-                        $usuario->imagem = $nome_arquivo;
-                    }
+                    $usuario->imagem = $nome_arquivo;
                 }
-
-                $usuario->save();
-
-                $retorno = [
-                    "status" => 0,
-                    "message" => "Cadastro realizado com sucesso",
-                    "data" => null
-                ];
-                
-                return response()->json($retorno);
             }
 
-            return response()->json([
-                "status" => 1,
-                "message" => "Usuário sem acesso a essa funcionalidade",
+            $usuario->save();
+
+            $retorno = [
+                "status" => 0,
+                "message" => "Cadastro realizado com sucesso",
                 "data" => null
-            ], 400);
+            ];
+            
+            return response()->json($retorno);
         } catch (Exception $ex) {
             Log::error("Erro na gravação do usuário: " . $ex->getMessage());
 
