@@ -1,6 +1,7 @@
 import Home from './components/home/Home.vue';
 import Apostas from './components/apostas/Apostas.vue';
 import Sorteios_open from './components/sorteios/Sorteios.vue';
+import Perfil_open from './components/perfil/Perfil.vue';
 
 import Admin from './components/admin/home/Admin.vue';
 import Sorteios from './components/admin/sorteios/Sorteios.vue';
@@ -27,7 +28,13 @@ export default [
 		component: Sorteios_open,
 		meta: {}
 	},
-	
+	{
+		path: '/perfil',
+		name: 'perfil',
+		component: Perfil_open,
+		meta: {}
+	},
+
 	{
 		path: '/admin',
 		name: 'admin',

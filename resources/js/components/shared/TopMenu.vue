@@ -3,7 +3,7 @@
 	<div>
 		<b-navbar toggleable="lg" type="dark" variant="dark">
 			<router-link to="/" class="navbar-brand" exact >Loteri Map</router-link>
-	
+
 			<b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
 			<b-collapse id="nav-collapse" is-nav>
@@ -18,12 +18,17 @@
 				<b-navbar-nav class="ml-auto right" v-if="logged">
 					<b-nav-item-dropdown v-bind:text="user.name" right>
 						<b-dropdown-item href="#">
+							<router-link :to="{name: 'perfil'}" class="nav-link nav-drop" exact>Perfil</router-link>
+						</b-dropdown-item>
+						<b-dropdown-item href="#" v-if="isAdmin == 1">
+							<router-link :to="{name: 'admin'}" class="nav-link nav-drop" exact>Admin</router-link>
+						</b-dropdown-item>
+						<b-dropdown-item href="#">
 							<a class="nav-link nav-drop" @click="sair"><font-awesome-icon icon="fa-solid fa-close" /> Sair</a>
 						</b-dropdown-item>
 					</b-nav-item-dropdown>
 				</b-navbar-nav>
 			</b-collapse>
-
 		</b-navbar>
 	</div>
 	<login-modal></login-modal>
@@ -45,7 +50,8 @@
 			return {
 				modalLogin: false,
 				logged: false,
-				user: null
+				user: null,
+				isAdmin: null
 			}
 		},
 
@@ -65,6 +71,7 @@
 				this.logged = true;
 
 				this.user = JSON.parse(localStorage.getItem('user'));
+				this.isAdmin = this.user.user_type;
 			}
 		}
 	}
