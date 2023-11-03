@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Aposta;
 
 class LoginController extends Controller
 {
@@ -65,38 +66,45 @@ class LoginController extends Controller
     public function cadastro(Request $request)
     {
         try {
-            $usuario = new User;
-            $usuario->name = $request->name;
-            $usuario->email = $request->email;
-            $usuario->password = Hash::make($request->password);
+            if (!$usuario = User::where('email', $request->email)->first()) {
+                $usuario = new User;
+                $usuario->name = $request->name;
+                $usuario->email = $request->email;
+                $usuario->password = Hash::make($request->password);
 
-            $usuario->status = 1;
-            $usuario->user_type = 2;
+                $usuario->status = 1;
+                $usuario->user_type = 2;
 
-            if ($request->imagem && strpos($request->imagem, 'base64')) {
-                Log::info($request->imagem);
-                $imagem = $request->imagem;
-                $tipo = substr($imagem, 11, strpos($imagem, ';') - 11);
+                if ($request->imagem && strpos($request->imagem, 'base64')) {
+                    $imagem = $request->imagem;
+                    $tipo = substr($imagem, 11, strpos($imagem, ';') - 11);
 
-                if ($tipo == 'png' || $tipo == 'jpg' || $tipo = 'jpeg') {
-                    $nome_arquivo = md5($request->name) . '.' . $tipo;
-                    $dados_imagem = explode(',', $imagem)[1];
+                    if ($tipo == 'png' || $tipo == 'jpg' || $tipo = 'jpeg') {
+                        $nome_arquivo = md5($request->name) . '.' . $tipo;
+                        $dados_imagem = explode(',', $imagem)[1];
 
-                    Storage::put('public/usuarios/' . $nome_arquivo, base64_decode($dados_imagem));
+                        Storage::put('public/usuarios/' . $nome_arquivo, base64_decode($dados_imagem));
 
-                    $usuario->imagem = $nome_arquivo;
+                        $usuario->imagem = $nome_arquivo;
+                    }
                 }
+
+                $usuario->save();
+
+                $retorno = [
+                    "status" => 0,
+                    "message" => "Cadastro realizado com sucesso",
+                    "data" => null
+                ];
+                
+                return response()->json($retorno);
             }
 
-            $usuario->save();
-
-            $retorno = [
-                "status" => 0,
-                "message" => "Cadastro realizado com sucesso",
+            return response()->json([
+                "status" => 1,
+                "message" => "O email informado já está sendo usado por outro usuário",
                 "data" => null
-            ];
-            
-            return response()->json($retorno);
+            ], 400);
         } catch (Exception $ex) {
             Log::error("Erro na gravação do usuário: " . $ex->getMessage());
 
@@ -182,19 +190,27 @@ class LoginController extends Controller
     {
         try {
             if ($this->isAdminUser()) {
-                if ($usuario = User::where('id', $id)->first()) {
-                    $usuario->delete();
+                if (!$apostas = Aposta::where('id_user', $id)->first()) {
+                    if ($usuario = User::where('id', $id)->first()) {
+                        $usuario->delete();
+
+                        return response()->json([
+                            "status" => 0,
+                            "message" => "Usuário excluído com sucesso",
+                            "data" => null
+                        ]);
+                    }
 
                     return response()->json([
-                        "status" => 0,
-                        "message" => "Usuário excluído com sucesso",
+                        "status" => 1,
+                        "message" => "Usuário não encontrado",
                         "data" => null
-                    ]);
+                    ], 400);
                 }
 
                 return response()->json([
                     "status" => 1,
-                    "message" => "Usuário não encontrado",
+                    "message" => "Não é permitido excluir usuários com apostas registradas. Faça a desativação do mesmo ao invés disso.",
                     "data" => null
                 ], 400);
             }

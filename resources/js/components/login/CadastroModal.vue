@@ -81,30 +81,37 @@
                         if (response.data.status == 0) {
                             this.$toast.success("Cadastro efetuado com sucesso");
 
-                            axios.post(api.login, this.form).then(response => {
-                                let dados = response.data;
+                            // axios.post(api.login, this.form).then(response => {
+                            //     console.log(response);
+                            //     let dados = response.data;
                                 
-                                if (dados.status == 0) {
-                                    localStorage.setItem('user', dados.data.user);
-                                    localStorage.setItem('token', dados.data.token);
+                            //     if (dados.status == 0) {
+                            //         localStorage.setItem('user', dados.data.user);
+                            //         localStorage.setItem('token', dados.data.token);
 
-                                    // TODO - Encaminhar para o home
-                                    this.$router.push('Home');
-                                }
-                            });
+                            //         // TODO - Encaminhar para o home
+                            //         this.$router.push('home');
+                            //     }
+                            // });
                             
                             // TODO - Login automático - JWT
                             // TODO - Encaminhar para o home
+                            this.apagaDados();
+                            this.$router.push('home');
                         } else {
-                            this.$toast.danger("Falha no cadastro");
+                            this.$toast.danger(response.data.message);
                             // TODO - Tratamento de erros
+                        }
+                    }).catch(error => {
+                        if (error.response.status == 400) {
+                            this.$toast.warning(error.response.data.message);
+                        } else {
+                            this.$toast.danger("Erro no envio do formulário");
                         }
                     });
                 } else {
                     this.$toast.warning("Preencha todos os campos");
                 }
-
-                this.apagaDados();
             },
 
             apagaDados() {
