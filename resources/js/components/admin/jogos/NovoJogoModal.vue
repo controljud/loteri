@@ -5,7 +5,7 @@
             <div class="d-block text-left">
                 <b-form>
                     <div class="row">
-                        <div class="col-md-12 center">
+                        <div class="col-md-12 center dv_image">
                             <label>
                                 <b-form-file
                                     accept="image/*"
@@ -16,7 +16,10 @@
                                 >
                                 </b-form-file>
                                 <img :src="image" class="image" />
-                            </label>
+                            </label><br />
+                            <span class="texto_arquivo">
+                                <b>Tipos de imagem permitidos: </b>png, jpg e jpeg / <b>Tamanho máximo permitido: </b>350kb
+                            </span>
                         </div>
                     </div>
 
@@ -165,8 +168,16 @@
                 const reader = new FileReader();
                 reader.readAsDataURL(image);
                 reader.onload = e =>{
-                    this.form.imagem = e.target.result;
-                    this.image = e.target.result;
+                    if (e.target.result.indexOf('png') > -1 || e.target.result.indexOf('jpg') > -1 || e.target.result.indexOf('jpeg') > -1) {
+                        if (e.total <= 350000) {
+                            this.form.imagem = e.target.result;
+                            this.image = e.target.result;
+                        } else {
+                            this.$toast.warning("Tamanho de imagem não permitido");
+                        }
+                    } else {
+                        this.$toast.warning("Tipo de arquivo não permitido");
+                    }
                 };
             }
         }
@@ -220,10 +231,17 @@
 .image {
     width: 100px;
     height: 100px;
-    margin-bottom: 35px;
 }
 
 .center {
     text-align: center;
+}
+
+.texto_arquivo {
+    font-size: 9px;
+}
+
+.dv_image {
+    margin-bottom: 35px;
 }
 </style>
