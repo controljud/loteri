@@ -190,21 +190,13 @@ class JogoController extends Controller
     public function getJogosTodos()
     {
         try {
-            if ($this->isAdminUser()) {
-                $jogos = Jogos::select('id', 'jogo')->get();
-
-                return response()->json([
-                    "status" => 0,
-                    "message" => "Jogos retornados com sucesso",
-                    "data" => $jogos
-                ]);
-            }
+            $jogos = Jogos::select('id', 'jogo')->get();
 
             return response()->json([
-                "status" => 1,
-                "message" => "Usuário sem acesso a essa funcionalidade",
-                "data" => null
-            ], 400);
+                "status" => 0,
+                "message" => "Jogos retornados com sucesso",
+                "data" => $jogos
+            ]);
         } catch (Exception $ex) {
             Log::error("Erro retorno dos dados: " . $ex->getMessage());
 
