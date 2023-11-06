@@ -7,9 +7,9 @@
                         <div class=" image d-flex flex-column justify-content-center align-items-center">
                             <img :src="image" class="img-perfil"/>
 
-                            <h3>{{ usuario.name }}</h3>
+                            <h3>{{ name }}</h3>
 
-                            <span class="idd">{{ usuario.email }}</span>
+                            <span class="idd">{{ email }}</span>
 
                             <div class="d-flex flex-row justify-content-center align-items-center mt-3"> 
                                 <p v-for="aposta in apostas" v-bind:key="aposta.jogo">{{ aposta.nome }}: {{ aposta.quantidade }} <span class="follow">Apostas</span></p>
@@ -25,9 +25,14 @@
 
                 <div class="row">
                     <div class="col-md-12 right">
-                        <a class="btn btn-sm btn-primary" href="javascript:void(0)">Editar Perfil</a>
+                        <a class="btn btn-sm btn-primary" href="javascript:void(0)" @click="editarPerfil()">Editar Perfil</a>
                     </div>
                 </div>
+
+                <PerfilModal
+                    ref="perfilModal"
+                    v-on:fechaModal="fechaModal()"
+                ></PerfilModal>
             </div>
         </div>
     </div>
@@ -54,13 +59,19 @@ export default ({
             data_inscricao: null,
             data_atualizacao: null,
             apostas: [],
-            image: '/images/user-admin.png'
+            image: '/images/user-admin.png',
+
+            name: null,
+            email: null
         }
     },
 
     created: function() {
         this.header.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
         this.usuario = JSON.parse(localStorage.getItem('user'));
+
+        this.name = this.usuario.name;
+        this.email = this.usuario.email;
 
         if (this.usuario.imagem != null) {
             this.image = this.usuario.imagem;
@@ -93,6 +104,15 @@ export default ({
             }).catch(error => {
                 
             });
+        },
+
+        editarPerfil() {
+            this.$bvModal.show('perfilModal');
+            this.$refs.perfilModal.preencheCampos(this.usuario);
+        },
+
+        fechaModal(name, email) {
+            this.$bvModal.hide('perfilModal');
         }
     }
 })

@@ -1,28 +1,25 @@
 <template>
     <div>
-        <b-modal id="novoUsuarioModal" hide-footer hide-header-close>
-            <template #modal-title>Novo Usuário</template>
+        <b-modal id="perfilModal" hide-footer hide-header-close>
+            <template #modal-title>Editar Perfil</template>
             <div class="d-block text-left">
                 <b-form>
                     <div class="row">
-                        <div class="col-md-6">
-                            <b-form-group label="Status *" label-for="status">
-                                <b-form-checkbox
-                                    id="checkbox-1"
-                                    v-model="form.status"
-                                    name="checkbox-1"
-                                    value="1"
-                                    unchecked-value="0"
+                        <div class="col-md-12 center">
+                            <label>
+                                <b-form-file
+                                    accept="image/*"
+                                    placeholder="Selecione a imagem do usuário"
+                                    drop-placeholder="Apague a imagem aqui"
+                                    @change="uploadImage"
+                                    :class="hide"
                                 >
-                                </b-form-checkbox>
-                            </b-form-group>
-                        </div>
-                        <div class="col-md-6">
-                            <b-form-group label="Tipo *" label-for="tipo">
-                                <b-select v-model="tipo" class="form-control">
-                                    <option v-for="tp in tipos" v-bind:key="tp.id" :selected="tp.id == 2 ? true : false" >{{ tp.tipo }}</option>
-                                </b-select>
-                            </b-form-group>
+                                </b-form-file>
+                                <img :src="image" class="image" />
+                            </label><br />
+                            <span class="texto_arquivo">
+                                <b>Tipos de imagem permitidos: </b>png, jpg e jpeg / <b>Tamanho máximo permitido: </b>350kb
+                            </span>
                         </div>
                     </div>
 
@@ -40,9 +37,19 @@
                                 <b-form-input id="email" type="text" autocomplete="off" v-model="form.email"></b-form-input>
                             </b-form-group>
                         </div>
+                    </div>
 
-                        <div class="col-md-4">
-                            
+                    <div class="row">
+                        <div class="col-md-6">
+                            <b-form-group label="Senha" label-for="senha">
+                                <b-form-input id="senha" type="password" autocomplete="off" v-model="form.senha"></b-form-input>
+                            </b-form-group>
+                        </div>
+
+                        <div class="col-md-6">
+                            <b-form-group label="Confirme a senha" label-for="confirma_senha">
+                                <b-form-input id="confirma_senha" type="password" autocomplete="off" v-model="form.confirma_senha"></b-form-input>
+                            </b-form-group>
                         </div>
                     </div>
                 </b-form>
@@ -84,16 +91,20 @@
                     id: null,
                     name: null,
                     email: null,
-                    status: null,
-                    tipo: null,
-                    image: null
+                    status: 1,
+                    imagem: null,
+                    senha: '',
+                    confirma_senha: null
                 },
 
                 activeClass: 'activeClass',
                 inactiveClass: '',
                 hoje: null,
                 tipos: [],
-                tipo: null
+                tipo: null,
+
+                image: '/images/user-admin.png',
+                hide: 'hide'
             }
         },
 
@@ -109,49 +120,52 @@
                     this.form.name != ""
                     && this.form.email != ""
                 ) {
-                    this.form.tipo = this.tipo;
-                    axios.post(api.usuario, this.form, this.header).then(response => {
-                        if (response.data.status == 0) {
-                            this.$toast.success(response.data.message);
+                    if (this.form.senha == '' || (this.form.senha != '' && this.form.senha == this.form.confirma_senha)) {
+                        this.form.tipo = this.tipo;
+                        axios.post(api.usuario, this.form, this.header).then(response => {
+                            if (response.data.status == 0) {
+                                this.$toast.success(response.data.message);
 
-                            this.$emit('atualizarTabela');
-                        } else {
-                            this.$toast.warning(response.data.message);
-                        }
+                                this.$emit('atualizarTabela');
+                            } else {
+                                this.$toast.warning(response.data.message);
+                            }
 
-                        this.zeraCampos();
-                    }).catch(error => {
-                        if (error.response.status == 400) {
-                            this.$toast.warning(error.response.data.message);
-                        } else {
-                            this.$toast.error(error.response.data.message);
-                        }
-                        
-                        this.zeraCampos();
-                    });
+                            this.zeraCampos();
+                            this.$emit('fechaModal');
+                        }).catch(error => {
+                            if (error.response.status == 400) {
+                                this.$toast.warning(error.response.data.message);
+                            } else {
+                                this.$toast.error(error.response.data.message);
+                            }
+                            
+                            this.zeraCampos();
+                            this.$emit('fechaModal');
+                        });
+                    } else {
+                        this.$toast.warning("Os dois campos de senha devem ser iguais");
+                    }
                 } else {
                     this.$toast.warning("Preencha todos os campos obrigatórios");
                 }
             },
-            
+
             preencheCampos(item) {
                 this.form.id = item.id;
                 this.form.name = item.name;
                 this.form.email = item.email;
-                this.form.status = item.status;
-                this.form.administrador = item.administrador;
-                this.form.image = item.image;
+
+                if (item.imagem != null) {
+                    this.image = item.imagem;
+                }
             },
 
             zeraCampos() {
                 this.form.id = null;
                 this.form.name = null;
                 this.form.email = null;
-                this.form.status = null;
-                this.form.tipo = null;
-                this.form.image = null;
-
-                this.tipo = 'Comum';
+                this.form.imagem = '/images/user-admin.png';
             },
 
             getUserTypes() {
@@ -170,6 +184,24 @@
                 if (item != null) {
                     this.tipo = item.tipo;
                 }
+            },
+
+            uploadImage(e) {
+                const image = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(image);
+                reader.onload = e =>{
+                    if (e.target.result.indexOf('png') > -1 || e.target.result.indexOf('jpg') > -1 || e.target.result.indexOf('jpeg') > -1) {
+                        if (e.total <= 350000) {
+                            this.form.imagem = e.target.result;
+                            this.image = e.target.result;
+                        } else {
+                            this.$toast.warning("Tamanho de imagem não permitido");
+                        }
+                    } else {
+                        this.$toast.warning("Tipo de arquivo não permitido");
+                    }
+                };
             }
         }
     }
@@ -213,5 +245,26 @@
 
 .caracteres {
     font-size: 9px;
+}
+
+.hide {
+    display: none;
+}
+
+.image {
+    width: 100px;
+    height: 100px;
+}
+
+.center {
+    text-align: center;
+}
+
+.texto_arquivo {
+    font-size: 9px;
+}
+
+.dv_image {
+    margin-bottom: 35px;
 }
 </style>

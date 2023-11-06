@@ -22,6 +22,7 @@
                             </span>
                         </div>
                     </div>
+                    
                     <div class="row">
                         <div class="col-md-6">
                             <b-form-group label="Status *" label-for="status">

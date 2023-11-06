@@ -43,6 +43,8 @@ class LoginController extends Controller
         }
 
         if ($user->status == 1) {
+            $this->setSession($user);
+
             return response()->json([
                 'status' => 0,
                 'message' => 'Login realizado com sucesso',
@@ -125,11 +127,15 @@ class LoginController extends Controller
                     $usuario = User::where('id', $request->id)->first();
                 } else {
                     $usuario = new User;
+                    $usuario->password = Hash::make("123456");
                 }
 
                 $usuario->name = $request->name;
                 $usuario->email = $request->email;
-                $usuario->password = Hash::make("123456");
+
+                if ($request->senha) {
+                    $usuario->password = Hash::make($request->senha);
+                }
 
                 if ($request->imagem && strpos($request->imagem, 'base64')) {
                     $imagem = $request->imagem;
@@ -163,10 +169,10 @@ class LoginController extends Controller
 
                 $retorno = [
                     "status" => 0,
-                    "message" => "Cadastro realizado com sucesso",
+                    "message" => "Perfil salvo com sucesso",
                     "data" => null
                 ];
-                
+
                 return response()->json($retorno);
             }
 
@@ -358,11 +364,45 @@ class LoginController extends Controller
         }
     }
 
+    public function getSession()
+    {
+        try {
+            session_start();
+            if (isset($_SESSION['user'])) {
+                return response()->json([
+                    'status' => 0,
+                    'data' => $_SESSION['user'],
+                    'message' => "Usuário retornado com sucesso"
+                ]);
+            }
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Não existe sessão ativa",
+                "data" => null
+            ], 400);
+        } catch (Exception $ex) {
+            Log::error("Erro retorno dos dados: " . $ex->getMessage());
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Erro no retorno dos dados",
+                "data" => null
+            ], 500);
+        }
+    }
+
     private function isAdminUser()
     {
         return User::where('users.id', Auth::id())
             ->join('lt_user_types', 'users.user_type', 'lt_user_types.id')
             ->where('lt_user_types.id', 1)
             ->exists();
+    }
+
+    private function setSession($user)
+    {
+        session_start();
+        $_SESSION['user'] = $user;
     }
 }
